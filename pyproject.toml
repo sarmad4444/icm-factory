@@ -1,0 +1,12 @@
+[project]
+name = "icm-generated"
+version = "0.1.0"
+description = "Interpretable Context Methodology (ICM) Master Workspace Builder"
+readme = "SOUL.md"
+requires-python = ">=3.11"
+dependencies = []
+
+[dependency-groups]
+dev = [
+    "pytest>=8.0.0",
+]
