@@ -13,6 +13,8 @@ def test_scaffold_from_archetype(tmp_path):
     valid, errors = validate_workspace(target)
     assert valid, f"Scaffolded workspace invalid: {errors}"
     assert (target / "AGENT.md").exists()
+    assert (target / "CLAUDE.md").exists()
+    assert (target / "GEMINI.md").exists()
     assert (target / "CONTEXT.md").exists()
     assert (target / "stages" / "01_research" / "output").exists()
 
@@ -32,6 +34,9 @@ def test_scaffold_custom_workspace(tmp_path):
     assert success
     valid, errors = validate_workspace(target)
     assert valid, f"Custom workspace invalid: {errors}"
+    assert (target / "AGENT.md").exists()
+    assert (target / "CLAUDE.md").exists()
+    assert (target / "GEMINI.md").exists()
     assert (target / "stages" / "01_extract" / "CONTEXT.md").exists()
     assert (target / "stages" / "02_transform" / "CONTEXT.md").exists()
     assert (target / "stages" / "03_load" / "CONTEXT.md").exists()

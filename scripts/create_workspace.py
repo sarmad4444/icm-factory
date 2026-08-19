@@ -184,6 +184,11 @@ def scaffold_custom_workspace(
         ctx_content = f"# {name} Task Routing\n\n" + "\n".join(routing_rows)
     (target / "CONTEXT.md").write_text(ctx_content, encoding="utf-8")
 
+    # Render Layer 0 Entry Points (CLAUDE.md and GEMINI.md)
+    claude_content = f"# {name}\n\nPlease refer to [`AGENT.md`](file://./AGENT.md) for agent identity, operating rules, and stage topology.\nRefer to [`CONTEXT.md`](file://./CONTEXT.md) for task routing.\n"
+    (target / "CLAUDE.md").write_text(claude_content, encoding="utf-8")
+    (target / "GEMINI.md").write_text(claude_content, encoding="utf-8")
+
     return True
 
 
