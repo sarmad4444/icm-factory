@@ -1,6 +1,6 @@
 [project]
 name = "icm-factory"
-version = "1.0.0"
+version = "0.5.0"
 description = "ICM Factory — Master Control Plane & Workspace Builder for Interpretable Context Methodology"
 readme = "AGENT.md"
 requires-python = ">=3.11"
