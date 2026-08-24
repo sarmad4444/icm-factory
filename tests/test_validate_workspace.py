@@ -168,3 +168,33 @@ def test_validate_high_signal_formatting(tmp_path):
     res_bad = validate_workspace(tmp_path)
     assert not res_bad.valid
     assert any("forbidden meta-tag" in e.lower() or "jargon" in e.lower() or "bluf" in e.lower() for e in res_bad.errors)
+
+
+def test_validate_agents_chambers(tmp_path):
+    # Setup compliant base workspace
+    (tmp_path / "AGENT.md").write_text("# Identity\n\n**Purpose:** Bounded workspace.\n", encoding="utf-8")
+    (tmp_path / "CONTEXT.md").write_text("# Task Routing\n\n**Purpose:** Route tasks.\n\n| Action | Target |\n|---|---|\n| Run | `stages/` |\n", encoding="utf-8")
+    stage = tmp_path / "stages" / "01_test"
+    stage.mkdir(parents=True)
+    (stage / "output").mkdir()
+    (stage / "CONTEXT.md").write_text("# Stage 01\n\n**Purpose:** Run test.\n\n## Inputs\n| K | V |\n|---|---|\n| a | b |\n\n## Process\n1. Go\n\n## Outputs\n| K | V |\n|---|---|\n| c | d |\n", encoding="utf-8")
+
+    # Add agents directory
+    agents_dir = tmp_path / "agents"
+    agents_dir.mkdir()
+    (agents_dir / "CONTEXT.md").write_text("# Agent Router\n\n**Purpose:** Route to agents.\n\n| Trigger | Agent |\n|---|---|\n| UI | `@ui` |\n", encoding="utf-8")
+    
+    chamber = agents_dir / "lead_dev"
+    chamber.mkdir()
+    (chamber / "AGENT.md").write_text("# Lead Dev\n\n**Purpose:** Build core.\n\n## Constraints\n* **Forbidden:** Never push untested code.\n", encoding="utf-8")
+
+    res = validate_workspace(tmp_path)
+    assert res.valid, f"Compliant agents workspace failed: {res.errors}"
+
+    # Test error on missing chamber AGENT.md
+    empty_chamber = agents_dir / "empty_agent"
+    empty_chamber.mkdir()
+    res_missing = validate_workspace(tmp_path)
+    assert not res_missing.valid
+    assert any("empty_agent" in e and "missing AGENT.md" in e for e in res_missing.errors)
+

@@ -25,6 +25,7 @@
 | `resources/quality_standards.md` | Quality Standards | Project-specific style rules and quality constraints |
 {OPTIONAL_DOCS_SUMMARY}
 {OPTIONAL_SKILLS_SUMMARY}
+{OPTIONAL_AGENTS_SUMMARY}
 {WORKFLOW_OR_STAGES_SUMMARY}
 
 ---

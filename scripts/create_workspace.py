@@ -164,6 +164,65 @@ def inject_governance(target: Path):
         shutil.copy(val_source, scripts_dir / "validate_workspace.py")
 
 
+def inject_agents(target: Path, workspace_name: str):
+    agents_dir = target / "agents"
+    agents_dir.mkdir(parents=True, exist_ok=True)
+
+    # 1. agents/CONTEXT.md
+    agents_ctx_tmpl = get_template_path("agents_CONTEXT")
+    if agents_ctx_tmpl.is_file():
+        agents_ctx_content = agents_ctx_tmpl.read_text(encoding="utf-8")
+    else:
+        agents_ctx_content = (
+            f"# Agent Directory & Task Routing Matrix\n\n"
+            f"**Purpose:** Master Layer 1 routing matrix that maps task categories and file patterns to specialized agent chambers.\n\n"
+            f"| Task Category / Trigger | File Pattern Glob | Assigned Agent | Agent Chamber Location |\n"
+            f"| :--- | :--- | :--- | :--- |\n"
+            f"| **Core Engineering** | `src/**` | `@lead_engineer` | [`agents/lead_engineer/AGENT.md`](file://./agents/lead_engineer/AGENT.md) |\n"
+        )
+    (agents_dir / "CONTEXT.md").write_text(agents_ctx_content, encoding="utf-8")
+
+    # 2. Starter Agent Chamber: agents/lead_engineer/AGENT.md
+    lead_chamber = agents_dir / "lead_engineer"
+    lead_chamber.mkdir(parents=True, exist_ok=True)
+    agent_tmpl = get_template_path("agent_AGENT")
+    if agent_tmpl.is_file():
+        agent_content = (
+            agent_tmpl.read_text(encoding="utf-8")
+            .replace("{AGENT_TITLE}", "Lead Engineer")
+            .replace("{AGENT_HANDLE}", "lead_engineer")
+            .replace("{AGENT_MISSION}", f"Lead engineer responsible for core implementation, architecture, and verification of {workspace_name}.")
+            .replace("{SKILL_1_NAME}", "skills/superpowers/")
+            .replace("{SKILL_1_PATH}", "../../skills/superpowers/")
+            .replace("{SKILL_1_TRIGGER}", "When planning and executing TDD workflows")
+            .replace("{SKILL_2_NAME}", "skills/adhd/")
+            .replace("{SKILL_2_PATH}", "../../skills/adhd/")
+            .replace("{SKILL_2_TRIGGER}", "When designing high-signal architecture decisions")
+            .replace("{SAMPLE_VERIFY_COMMAND}", "uv run pytest -v")
+            .replace("{POSITIVE_CONSTRAINT_1}", "All new features must include automated unit tests.")
+            .replace("{POSITIVE_CONSTRAINT_2}", "Follow high-signal documentation and typing standards.")
+            .replace("{FORBIDDEN_ACTION_1}", "Never commit code without automated verification.")
+            .replace("{FORBIDDEN_ACTION_2}", "Never bypass stage contracts or broken test suites.")
+        )
+    else:
+        agent_content = (
+            f"# Agent Identity: Lead Engineer (`@lead_engineer`)\n\n"
+            f"**Purpose:** Lead engineer for {workspace_name}.\n\n"
+            f"## 1. Operating Constraints & Negative Guardrails\n\n"
+            f"* **Forbidden:** Never commit code without automated verification.\n"
+        )
+    (lead_chamber / "AGENT.md").write_text(agent_content, encoding="utf-8")
+
+    # 3. Inter-Agent Handoffs folder in docs/phases/phase_01_mvp_core/handoffs/ if docs/phases exists
+    phases_dir = target / "docs" / "phases"
+    if phases_dir.is_dir():
+        for phase_d in phases_dir.iterdir():
+            if phase_d.is_dir() and phase_d.name.startswith("phase_"):
+                handoffs_dir = phase_d / "handoffs"
+                handoffs_dir.mkdir(parents=True, exist_ok=True)
+                (handoffs_dir / ".gitkeep").write_text("", encoding="utf-8")
+
+
 def scaffold_workspace(
     name: str,
     target_dir: Path | str,
@@ -175,6 +234,7 @@ def scaffold_workspace(
     with_compiler: bool = False,
     with_skills: bool = False,
     with_governance: bool = False,
+    with_agents: bool = False,
     allow_existing: bool = False,
 ) -> bool:
     target = Path(target_dir).resolve()
@@ -321,14 +381,18 @@ def scaffold_workspace(
     if with_compiler:
         inject_compiler(target, name)
         routing_rows.append("| Prompt Backlog & Initiatives | `docs/backlog/` | [`shaped_initiatives.md`](file://./docs/backlog/shaped_initiatives.md) | 5-part prompt contracts |")
+    if with_agents:
+        inject_agents(target, name)
+        routing_rows.insert(0, "| Multi-Agent Chambers | `agents/` | [`CONTEXT.md`](file://./agents/CONTEXT.md) | Multi-agent task routing |")
     if with_skills:
         inject_skills(target)
     if with_governance:
         inject_governance(target)
 
     # Render AGENT.md
-    docs_summary = "- `docs/`: Live strategy, objective sprint phases, and backlog." if (with_pm or with_compiler) else ""
-    skills_summary = "- `skills/`: On-demand dynamic skills catalog." if with_skills else ""
+    docs_summary = "| [`docs/`](file://./docs/STRATEGY.md) | Strategy & Backlog | Live strategy, sprint phases, and backlog |" if (with_pm or with_compiler) else ""
+    skills_summary = "| [`skills/`](file://./skills/CONTEXT.md) | Dynamic Skills | On-demand dynamic skills catalog |" if with_skills else ""
+    agents_summary = "| [`agents/`](file://./agents/CONTEXT.md) | Agent Chambers | Specialized agent chambers & routing matrix |" if with_agents else ""
     workflows_summary = "## Stages & Workflows\n\n" + "\n".join(stages_summary_lines)
 
     agent_tmpl = get_template_path("AGENT")
@@ -339,6 +403,7 @@ def scaffold_workspace(
             .replace("{WORKSPACE_DESCRIPTION}", ws_desc)
             .replace("{OPTIONAL_DOCS_SUMMARY}", docs_summary)
             .replace("{OPTIONAL_SKILLS_SUMMARY}", skills_summary)
+            .replace("{OPTIONAL_AGENTS_SUMMARY}", agents_summary)
             .replace("{WORKFLOW_OR_STAGES_SUMMARY}", workflows_summary)
         )
     else:
@@ -356,6 +421,8 @@ def scaffold_workspace(
         res_summary += "\n- `skills/CONTEXT.md`: Dynamic skills manifest."
     if with_pm:
         res_summary += "\n- `docs/STRATEGY.md`: Active phase status and sprint roadmap."
+    if with_agents:
+        res_summary += "\n- `agents/CONTEXT.md`: Multi-agent task routing matrix and specialist chambers."
 
     if context_tmpl.is_file():
         ctx_content = (
@@ -435,6 +502,7 @@ def adopt_existing_codebase(
     with_compiler: bool = True,
     with_skills: bool = True,
     with_governance: bool = False,
+    with_agents: bool = False,
 ) -> bool:
     src = Path(source_dir).resolve()
     dst = Path(target_dir).resolve()
@@ -472,6 +540,7 @@ def adopt_existing_codebase(
         with_compiler=with_compiler,
         with_skills=with_skills,
         with_governance=with_governance,
+        with_agents=with_agents,
         allow_existing=True,
     )
     return True
@@ -535,6 +604,7 @@ def interactive_wizard():
             with_pm=topo_choice in ["2", "4"],
             with_compiler=True,
             with_skills=True,
+            with_agents=True,
         )
         if success:
             valid, errors = validate_workspace(target_path)
@@ -571,6 +641,7 @@ def main():
     parser.add_argument("--with-compiler", action="store_true", help="Add 5-Part Prompt Compiler (docs/backlog)")
     parser.add_argument("--with-skills", action="store_true", help="Add curated master skills bundle")
     parser.add_argument("--with-governance", action="store_true", help="Inject local validate_workspace.py")
+    parser.add_argument("--with-agents", action="store_true", help="Add Layer 2/3 multi-agent specialist chambers (agents/) and handoff directory")
     parser.add_argument("--interactive", action="store_true", help="Launch interactive creation wizard")
     args = parser.parse_args()
 
@@ -596,6 +667,7 @@ def main():
             with_compiler=args.with_compiler,
             with_skills=args.with_skills,
             with_governance=args.with_governance,
+            with_agents=args.with_agents,
         )
     elif args.archetype:
         print(f"[+] Scaffolding from archetype '{args.archetype}' into {target_dir}...")
@@ -613,6 +685,7 @@ def main():
             with_compiler=args.with_compiler,
             with_skills=args.with_skills,
             with_governance=args.with_governance,
+            with_agents=args.with_agents,
         )
 
     if not success:

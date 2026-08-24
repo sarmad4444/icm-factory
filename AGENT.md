@@ -31,12 +31,13 @@
 
 ---
 
-## 3. The 6 Pluggable Utilities (Add-Ons)
+## 3. The 7 Pluggable Utilities (Add-Ons)
 
 | Flag | Add-On Name | Injected Capabilities & Directory Structure |
 | :--- | :--- | :--- |
 | `--with-pm` | Advanced Project Management | `docs/phases/`, `tasks.md`, `goals.md`, and `STRATEGY.md` |
 | `--with-compiler` | 5-Part Prompt Compiler | `docs/backlog/` (`raw_ideas.md` $\rightarrow$ `shaped_initiatives.md`) |
+| `--with-agents` | Multi-Agent Specialist Chambers | `agents/` (recursive agent chambers) & `docs/phases/*/handoffs/` |
 | `--multi-workflow` | Multi-Pipeline Orchestrator | `workflows/<domain>/stages/` structure |
 | `--with-skills` | Pre-Curated Skills Bundle | Master `./skills/` + `skills/CONTEXT.md` (`workspace-architect`, `superpowers`, `graphify`) |
 | `--with-governance` | Workspace Self-Validator | Injects local `scripts/validate_workspace.py` inside child workspace |

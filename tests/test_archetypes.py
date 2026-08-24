@@ -20,6 +20,9 @@ def test_required_templates_exist():
         "tasks.template.md",
         "raw_ideas.template.md",
         "shaped_initiatives.template.md",
+        "agents_CONTEXT.template.md",
+        "agent_AGENT.template.md",
+        "agent_handoff.template.md",
     ]
     
     for tmpl in required_templates:

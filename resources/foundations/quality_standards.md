@@ -45,3 +45,15 @@
 | **Tabular Structure** | Multi-variable interfaces rendered as Markdown tables | Avoids narrative prose walls |
 | **Bold Lead Anchors** | Instructions/constraints lead with bold keywords | `* **Scope:**`, `* **Forbidden:**` |
 | **Zero-Jargon Rule** | No third-party meta-tags or conversational filler | Rejects meta-labels and conversational noise |
+
+---
+
+## 5. Multi-Agent Chamber & Handoff Invariants
+
+| Chamber Invariant | Rule Description | Verification Criteria |
+| :--- | :--- | :--- |
+| **Chamber Identity** | Every agent in `agents/<name>/` has a dedicated contract | Requires `agents/<name>/AGENT.md` |
+| **Scoped Skill Envelope** | Agents mount only authorized dynamic skills from `skills/` | Verified against `skills/` directory on disk |
+| **Explicit Guardrails** | Every agent declares negative boundary constraints | Must contain `* **Forbidden:**` anchors |
+| **Plain-Text Handoffs** | Inter-agent requests written to disk in Markdown | Output to `docs/phases/*/handoffs/` |
+

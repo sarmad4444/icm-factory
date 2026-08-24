@@ -216,7 +216,10 @@ def check_dead_context_and_orphans(path: Path) -> tuple[list[str], list[str]]:
         except Exception:
             continue
 
-        for match in link_pattern.finditer(content):
+        # Strip fenced code blocks to avoid checking illustrative code examples
+        clean_content = re.sub(r"```[\s\S]*?```", "", content)
+
+        for match in link_pattern.finditer(clean_content):
             target = match.group(1).strip()
             # Skip URLs, anchor links, or template variables
             if target.startswith("http://") or target.startswith("https://") or target.startswith("#") or "{" in target or "}" in target:
@@ -308,6 +311,44 @@ def check_task_governance_and_skills(path: Path) -> tuple[list[str], list[str]]:
                         if not skill_path.is_file():
                             errors.append(f"Skill '{s_name}' is listed in skills/CONTEXT.md but missing '{skill_path.relative_to(path)}'")
 
+    # Check agents/ if present
+    agents_dir = path / "agents"
+    if agents_dir.is_dir():
+        agents_ctx = agents_dir / "CONTEXT.md"
+        if not agents_ctx.is_file():
+            errors.append("agents/ directory exists but missing agents/CONTEXT.md routing manifest")
+        else:
+            ctx_text = agents_ctx.read_text(encoding="utf-8")
+            if not any(line.strip().startswith("|") for line in ctx_text.splitlines()):
+                warnings.append("agents/CONTEXT.md does not contain a Markdown dispatch table")
+
+        # Audit each agent chamber
+        for chamber in agents_dir.iterdir():
+            if chamber.is_dir():
+                agent_file = chamber / "AGENT.md"
+                if not agent_file.is_file():
+                    errors.append(f"Agent chamber '{chamber.name}' missing AGENT.md contract")
+                else:
+                    agent_text = agent_file.read_text(encoding="utf-8")
+                    lines = [l.strip() for l in agent_text.splitlines() if l.strip()]
+                    top_block = "\n".join(lines[:10])
+                    if "**Purpose:**" not in top_block and "**Mission:**" not in top_block:
+                        warnings.append(f"Agent chamber '{chamber.name}' AGENT.md missing top-level '**Purpose:**' or '**Mission:**'")
+                    if "* **Forbidden:**" not in agent_text and "**Forbidden:**" not in agent_text:
+                        warnings.append(f"Agent chamber '{chamber.name}' AGENT.md missing explicit negative guardrails ('* **Forbidden:**')")
+
+                    # Verify skills listed in chamber AGENT.md exist if pointing to workspace skills
+                    if skills_dir.is_dir():
+                        for line in agent_text.splitlines():
+                            line = line.strip()
+                            if line.startswith("|") and ("skills/" in line or "`skills/" in line):
+                                for part in line.split("|"):
+                                    m = re.search(r"skills/([a-zA-Z0-9_\-]+)", part)
+                                    if m:
+                                        skill_name = m.group(1)
+                                        if not (skills_dir / skill_name).is_dir() and not (skills_dir / skill_name / "SKILL.md").is_file():
+                                            warnings.append(f"Agent chamber '{chamber.name}' references skill '{skill_name}' not found in workspace skills/")
+
     return errors, warnings
 
 
@@ -334,6 +375,10 @@ def check_high_signal_formatting(path: Path) -> tuple[list[str], list[str]]:
         files_to_check.extend(path.glob("stages/*/CONTEXT.md"))
     if (path / "workflows").is_dir():
         files_to_check.extend(path.glob("workflows/*/stages/*/CONTEXT.md"))
+    if (path / "agents").is_dir():
+        files_to_check.extend(path.glob("agents/**/AGENT.md"))
+        if (path / "agents" / "CONTEXT.md").is_file():
+            files_to_check.append(path / "agents" / "CONTEXT.md")
 
     for f_path in files_to_check:
         try:

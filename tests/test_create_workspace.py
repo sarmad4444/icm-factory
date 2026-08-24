@@ -167,3 +167,30 @@ def test_adopt_existing_codebase(tmp_path):
     assert (adopted_target / "AGENT.md").is_file()
     assert (adopted_target / "CONTEXT.md").is_file()
     assert (adopted_target / "docs" / "STRATEGY.md").is_file()
+
+
+def test_scaffold_with_agents(tmp_path):
+    target = tmp_path / "multi_agent_workspace"
+    success = scaffold_workspace(
+        name="multi_agent_workspace",
+        target_dir=target,
+        topology="2",
+        with_pm=True,
+        with_compiler=True,
+        with_skills=True,
+        with_agents=True,
+    )
+    assert success
+    assert (target / "agents" / "CONTEXT.md").is_file()
+    assert (target / "agents" / "lead_engineer" / "AGENT.md").is_file()
+    assert (target / "docs" / "phases" / "phase_01_mvp_core" / "handoffs").is_dir()
+    
+    agent_text = (target / "AGENT.md").read_text(encoding="utf-8")
+    assert "agents/" in agent_text
+    
+    ctx_text = (target / "CONTEXT.md").read_text(encoding="utf-8")
+    assert "Multi-Agent Chambers" in ctx_text or "agents/" in ctx_text
+
+    valid, errors = validate_workspace(target)
+    assert valid, f"Workspace with agents failed validation: {errors}"
+
