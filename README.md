@@ -1,6 +1,8 @@
-# 🏭 ICM Factory
+# 🏭 ICM Factory (v0.5.0)
 
-<div align="center">
+**Purpose:** Provide software teams and autonomous AI agents with an LLM-agnostic, deterministic, filesystem-driven control plane for scaffolding, validating, and executing complex multi-stage and multi-agent projects without runtime code lock-in.
+
+---
 
 [![Version](https://img.shields.io/badge/version-0.5.0-blue.svg)](pyproject.toml)
 [![Python](https://img.shields.io/badge/python-3.11%2B-blue.svg)](https://www.python.org/)
@@ -10,14 +12,6 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 **Production-grade scaffolding engine, master control plane, and multi-agent workspace orchestrator built on Jake Van Clief's Interpretable Context Methodology (ICM).**
-
-[Features](#-key-features) • [Why ICM?](#-why-icm-the-paradigm-shift) • [The 5 Principles](#-the-five-core-principles-of-icm) • [Installation](#-installation--prerequisites) • [Quick Start](#-quick-start-usage-guide) • [Credits & References](#-credits--foundational-references)
-
-</div>
-
----
-
-**Purpose:** Provide software teams and autonomous AI agents with an LLM-agnostic, deterministic, filesystem-driven control plane for scaffolding, validating, and executing complex multi-stage and multi-agent projects without runtime code lock-in.
 
 ---
 
