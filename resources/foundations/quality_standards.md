@@ -34,3 +34,14 @@
 * **No Numbering Gaps:** Stages must follow contiguous sequence without skipped indices.
 * **Contract Completeness:** Every stage `CONTEXT.md` must declare `## Inputs`, `## Process`, and `## Outputs`.
 * **Output Folders:** Every stage must have an `output/` directory containing working deliverables or a `.gitkeep`.
+
+---
+
+## 4. High-Signal Documentation & Agent Voice Invariants
+
+| Standard Invariant | Rule Description | Verification Criteria |
+| :--- | :--- | :--- |
+| **Top-Level Purpose** | Single-sentence mission immediately beneath H1 | Starts with `**Purpose:**` or `**Mission:**` |
+| **Tabular Structure** | Multi-variable interfaces rendered as Markdown tables | Avoids narrative prose walls |
+| **Bold Lead Anchors** | Instructions/constraints lead with bold keywords | `* **Scope:**`, `* **Forbidden:**` |
+| **Zero-Jargon Rule** | No third-party meta-tags or conversational filler | Rejects meta-labels and conversational noise |

@@ -147,3 +147,23 @@ def test_git_safety_advice(tmp_path):
     (tmp_path / ".git").mkdir()
     advice = detect_git_and_prompt_safety(tmp_path, non_interactive=True)
     assert "Git Safety" in advice or "git worktree" in advice or "branch" in advice
+
+
+def test_validate_high_signal_formatting(tmp_path):
+    # Setup compliant workspace
+    (tmp_path / "AGENT.md").write_text("# Identity\n\n**Purpose:** Bounded workspace for testing.\n", encoding="utf-8")
+    (tmp_path / "CONTEXT.md").write_text("# Task Routing\n\n**Purpose:** Route tasks.\n\n| Action | Target |\n|---|---|\n| Run | `stages/` |\n", encoding="utf-8")
+    stage = tmp_path / "stages" / "01_test"
+    stage.mkdir(parents=True)
+    (stage / "output").mkdir()
+    (stage / "CONTEXT.md").write_text("# Stage 01\n\n**Purpose:** Execute test stage.\n\n## Inputs\n| Source | Desc |\n|---|---|\n| Ref | None |\n\n## Process\n1. Run\n\n## Outputs\n| File | Path |\n|---|---|\n| out | output/ |\n", encoding="utf-8")
+
+    res = validate_workspace(tmp_path)
+    assert res.valid
+    assert len(res.errors) == 0
+
+    # Test failure on forbidden meta-tag
+    (tmp_path / "AGENT.md").write_text("# Identity\n\n> **BLUF:** Forbidden meta-tag.\n", encoding="utf-8")
+    res_bad = validate_workspace(tmp_path)
+    assert not res_bad.valid
+    assert any("forbidden meta-tag" in e.lower() or "jargon" in e.lower() or "bluf" in e.lower() for e in res_bad.errors)

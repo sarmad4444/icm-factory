@@ -308,6 +308,57 @@ def check_task_governance_and_skills(path: Path) -> tuple[list[str], list[str]]:
     return errors, warnings
 
 
+def check_high_signal_formatting(path: Path) -> tuple[list[str], list[str]]:
+    errors: list[str] = []
+    warnings: list[str] = []
+
+    # Forbidden meta-tags that violate zero-jargon standard (matched at tag positions)
+    forbidden_meta_tags = [
+        re.compile(r"(?m)^[>\s*#-]*\*{0,2}BLUF\s*:", re.IGNORECASE),
+        re.compile(r"(?m)^[>\s*#-]*\*{0,2}ADHD\s+(Mode|Protocol)\b", re.IGNORECASE),
+        re.compile(r"(?m)^[>\s*#-]*\*{0,2}Caveman\s+Mode\b", re.IGNORECASE),
+    ]
+
+    # Files to check for high-signal formatting
+    files_to_check: list[Path] = []
+    for f_name in ["AGENT.md", "CONTEXT.md", "CLAUDE.md"]:
+        f_path = path / f_name
+        if f_path.is_file():
+            files_to_check.append(f_path)
+
+    # Check stage CONTEXT.md files
+    if (path / "stages").is_dir():
+        files_to_check.extend(path.glob("stages/*/CONTEXT.md"))
+    if (path / "workflows").is_dir():
+        files_to_check.extend(path.glob("workflows/*/stages/*/CONTEXT.md"))
+
+    for f_path in files_to_check:
+        try:
+            text = f_path.read_text(encoding="utf-8")
+        except Exception:
+            continue
+
+        rel_path = f_path.relative_to(path)
+
+        # Check for forbidden meta-tags
+        for tag_re in forbidden_meta_tags:
+            match = tag_re.search(text)
+            if match:
+                errors.append(
+                    f"High-Signal Violation in {rel_path}: Forbidden meta-tag/jargon '{match.group(0)}' found. "
+                    "Use native Markdown formatting (Purpose + Tables + Bold Keys) without third-party tags."
+                )
+
+        # Check for Purpose / Mission in AGENT.md, CONTEXT.md, and stage CONTEXT.md
+        if f_path.name in ["AGENT.md", "CONTEXT.md"] and not (rel_path.parts[0] == "skills"):
+            lines = [l.strip() for l in text.splitlines() if l.strip()]
+            top_block = "\n".join(lines[:10])
+            if "**Purpose:**" not in top_block and "**Mission:**" not in top_block and "Mission:" not in top_block and "Purpose:" not in top_block:
+                warnings.append(f"High-Signal Advisory in {rel_path}: Missing top-level '**Purpose:**' or '**Mission:**' statement beneath H1.")
+
+    return errors, warnings
+
+
 def validate_workspace(
     workspace_path: Path | str,
     fix: bool = False,
@@ -344,6 +395,11 @@ def validate_workspace(
     t4_errs, t4_warns = check_task_governance_and_skills(path)
     all_errors.extend(t4_errs)
     all_warnings.extend(t4_warns)
+
+    # Tier 5: High-Signal Contract & Voice Linter
+    t5_errs, t5_warns = check_high_signal_formatting(path)
+    all_errors.extend(t5_errs)
+    all_warnings.extend(t5_warns)
 
     is_valid = len(all_errors) == 0
     return ValidationResult(is_valid, all_errors, all_warnings)

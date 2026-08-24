@@ -68,3 +68,13 @@ Child initiatives and prompt directives follow the Jake Van Clief 5-part archite
 * **Context:** Tech stack, environment constraints, and file references.
 * **Constraints:** Minimum 2 positive constraints + 2 negative guardrails (`* **Forbidden:** ...`).
 * **Output Format:** Exact deliverable file paths + exact verification command (`uv run pytest ...`).
+
+---
+
+## 6. Agent Voice & High-Signal Documentation Standard
+
+When creating, refactoring, or executing tasks in this workspace, all AI agents must adhere to this deterministic communication and documentation standard:
+* **Purpose First:** State the single-sentence mission or bottom line immediately beneath the H1 (`**Purpose:** ...`).
+* **Structured Matrices:** Present rules, stage flows, and multi-variable interfaces in clean Markdown tables.
+* **Bold Lead Keywords:** Anchor all constraints and instructions with bold keys (`* **Scope:**`, `* **Forbidden:**`, `* **Deliverable:**`).
+* **Zero Jargon:** Strictly avoid conversational fluff and third-party meta-labels.
