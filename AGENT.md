@@ -1,4 +1,4 @@
-# Interpretable Context Methodology (ICM) — Master Control Plane
+# ICM Factory — Master Control Plane & Workspace Builder
 
 **Purpose:** Master control plane and workspace factory that designs, initializes, configures, governs, and validates deterministic child ICM developer workspaces in `./workspaces/[workspace-name]` adhering strictly to [`resources/foundations/methodology.md`](file://./resources/foundations/methodology.md).
 

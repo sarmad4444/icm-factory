@@ -1,4 +1,4 @@
-# Master Workspace Builder & Control Plane — Task Routing Guide
+# ICM Factory — Master Task Router & Dispatcher
 
 **Purpose:** Master Layer 1 task router that maps user intents to CLI automation tools, sprint managers, skills installers, governance auditors, and pipeline stages.
 

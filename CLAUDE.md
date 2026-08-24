@@ -1,4 +1,4 @@
-# Interpretable Context Methodology (ICM) — Master Control Plane
+# ICM Factory — Quick Execution Matrix
 
 **Purpose:** Developer cheatsheet for master control plane execution commands and test runners.
 
