@@ -1,27 +1,29 @@
-# Stage 03: Scaffolding Generation — Contract
+# Stage 03: Scaffolding Generation
 
-**Layer:** Layer 2 (Stage Execution Contract)  
-**Stage Name:** `03_scaffolding`
+**Purpose:** Scaffold the directory tree and render Layer 0, Layer 1, and Layer 2 contracts for the target workspace.
 
 ---
 
 ## Inputs
 
-- **Layer 3 (Reference):** `references/standards.md`
-- **Layer 3 (Reference):** `../../resources/templates/`
-- **Layer 4 (Working):** `../02_stage_mapping/output/stage_blueprint.md`
+| Layer | Source File | Description |
+| :--- | :--- | :--- |
+| **Layer 3 (Reference)** | `references/standards.md` | Scaffolding directory layout and file standards |
+| **Layer 3 (Reference)** | `../../resources/templates/` | Master contract templates (`AGENT.md.tmpl`, `CONTEXT.md.tmpl`) |
+| **Layer 4 (Working)** | `../02_stage_mapping/output/stage_blueprint.md` | Validated stage blueprint from Stage 02 |
 
 ---
 
 ## Process
 
-1. Read the stage blueprint from Stage 02.
-2. Generate all directories under `workspaces/[workspace-name]/` (`stages/`, `resources/`, `docs/`, `skills/`).
-3. Render Layer 0 (`AGENT.md`), Layer 1 (`CONTEXT.md`), and each stage's Layer 2 (`CONTEXT.md`).
-4. Output the generation manifest and scaffolding log.
+1. **Create Directories:** Generate `stages/`, `resources/`, `docs/`, and `skills/` under `workspaces/[name]/`.
+2. **Render Contracts:** Populate Layer 0 (`AGENT.md`), Layer 1 (`CONTEXT.md`), and stage Layer 2 (`CONTEXT.md`).
+3. **Log Manifest:** Output the generation manifest and file creation record.
 
 ---
 
 ## Outputs
 
-- `scaffolding_plan.md` -> `output/scaffolding_plan.md`
+| Output Deliverable | Target Path | Success Criteria |
+| :--- | :--- | :--- |
+| `scaffolding_plan.md` | `output/scaffolding_plan.md` | Rendered workspace directories and contract manifest |

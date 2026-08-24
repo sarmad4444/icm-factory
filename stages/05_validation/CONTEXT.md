@@ -1,27 +1,29 @@
-# Stage 05: Validation & Quality Audit — Contract
+# Stage 05: Validation & Quality Audit
 
-**Layer:** Layer 2 (Stage Execution Contract)  
-**Stage Name:** `05_validation`
+**Purpose:** Run automated compliance audits and cross-stage contract verifications to validate workspace health.
 
 ---
 
 ## Inputs
 
-- **Layer 3 (Reference):** `references/checklist.md`
-- **Layer 3 (Reference):** `../../resources/foundations/quality_standards.md`
-- **Layer 4 (Working):** `../04_factory_setup/output/factory_configs.md`
+| Layer | Source File | Description |
+| :--- | :--- | :--- |
+| **Layer 3 (Reference)** | `references/checklist.md` | Pre-flight validation checklist and heuristics |
+| **Layer 3 (Reference)** | `../../resources/foundations/quality_standards.md` | Master quality thresholds and test gates |
+| **Layer 4 (Working)** | `../04_factory_setup/output/factory_configs.md` | Configured workspace files from Stage 04 |
 
 ---
 
 ## Process
 
-1. Run automated ICM compliance validator (`uv run python scripts/validate_workspace.py [target_path]`).
-2. Audit cross-stage contracts (ensure Stage 02 inputs match Stage 01 outputs, etc.).
-3. Verify that all required reference templates are populated.
-4. Produce the final Validation and Readiness Audit Report.
+1. **Run Compliance Audit:** Execute `uv run python scripts/validate_workspace.py [target_path]`.
+2. **Verify Interfaces:** Confirm sequential handoffs between all stage outputs and downstream inputs.
+3. **Generate Report:** Compile the 4-tier validation audit results.
 
 ---
 
 ## Outputs
 
-- `audit_report.md` -> `output/audit_report.md`
+| Output Deliverable | Target Path | Success Criteria |
+| :--- | :--- | :--- |
+| `audit_report.md` | `output/audit_report.md` | 100% 4-tier health compliance and clean contract audit |

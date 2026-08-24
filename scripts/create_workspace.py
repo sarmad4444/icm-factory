@@ -218,16 +218,17 @@ def scaffold_workspace(
             (s_dir / "output" / ".gitkeep").write_text(f"# Output for {dir_name}\n", encoding="utf-8")
 
             contract = f"""<!-- 💡 HOW THIS WORKS -->
-# Stage {idx:02d}: {s_title} — Contract
+# Stage {idx:02d}: {s_title}
 
-**Stage:** `stages/{dir_name}`  
 **Purpose:** {s_process}
 
 ---
 
 ## Inputs
 
-{s_inputs}
+| Layer | Source File | Description |
+| :--- | :--- | :--- |
+| **Reference** | `resources/quality_standards.md` | Quality rules and project guidelines |
 
 ---
 
@@ -239,7 +240,9 @@ def scaffold_workspace(
 
 ## Outputs
 
-{s_outputs}
+| Output Deliverable | Target Path | Success Criteria |
+| :--- | :--- | :--- |
+| `{s_name}_artifact.md` | `stages/{dir_name}/output/` | Completed stage deliverable |
 """
             (s_dir / "CONTEXT.md").write_text(contract, encoding="utf-8")
             stages_summary_lines.append(f"- `stages/{dir_name}`: {s_title}")
@@ -265,15 +268,17 @@ def scaffold_workspace(
                 (s_path / "output" / ".gitkeep").write_text(f"# Output for {wf_name}/{dir_name}\n", encoding="utf-8")
 
                 contract = f"""<!-- 💡 HOW THIS WORKS -->
-# {wf_name.title()} — Stage {idx:02d}: {s_title} Contract
+# {wf_name.title()} — Stage {idx:02d}: {s_title}
 
-**Stage:** `workflows/{wf_name}/stages/{dir_name}`
+**Purpose:** Execute tasks for {s_title} in {wf_name} workflow.
 
 ---
 
 ## Inputs
 
-- `resources/quality_standards.md`
+| Layer | Source File | Description |
+| :--- | :--- | :--- |
+| **Reference** | `resources/quality_standards.md` | Quality rules and workflow guidelines |
 
 ---
 
@@ -285,7 +290,9 @@ def scaffold_workspace(
 
 ## Outputs
 
-- `workflows/{wf_name}/stages/{dir_name}/output/{s_name}_artifact.md`
+| Output Deliverable | Target Path | Success Criteria |
+| :--- | :--- | :--- |
+| `{s_name}_artifact.md` | `workflows/{wf_name}/stages/{dir_name}/output/` | Completed workflow deliverable |
 """
                 (s_path / "CONTEXT.md").write_text(contract, encoding="utf-8")
                 routing_rows.append(f"| {wf_name.title()} / {s_title} | `workflows/{wf_name}/stages/{dir_name}/` | [`CONTEXT.md`](file://./workflows/{wf_name}/stages/{dir_name}/CONTEXT.md) | Output artifact |")

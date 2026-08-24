@@ -1,32 +1,29 @@
-# Stage 02: Stage Mapping & Blueprinting — Contract
+# Stage 02: Stage Mapping & Blueprinting
 
-**Layer:** Layer 2 (Stage Execution Contract)  
-**Stage Name:** `02_stage_mapping`
+**Purpose:** Decompose the domain brief into discrete sequential stages following the "one stage, one job" rule to produce the workspace blueprint.
 
 ---
 
 ## Inputs
 
-- **Layer 3 (Reference):** `references/patterns.md`
-- **Layer 3 (Reference):** `../../resources/foundations/quality_standards.md`
-- **Layer 4 (Working):** `../01_discovery/output/domain_brief.md`
+| Layer | Source File | Description |
+| :--- | :--- | :--- |
+| **Layer 3 (Reference)** | `references/patterns.md` | Pipeline decomposition and stage boundary patterns |
+| **Layer 3 (Reference)** | `../../resources/foundations/quality_standards.md` | Interface validation standards and contract rules |
+| **Layer 4 (Working)** | `../01_discovery/output/domain_brief.md` | Domain requirements brief from Stage 01 |
 
 ---
 
 ## Process
 
-1. Read the domain brief from Stage 01.
-2. Decompose the workflow into discrete sequential stages following the "one stage, one job" rule.
-3. For every stage, define:
-   - Stage folder name (`NN_stagename`)
-   - Stage title and role
-   - Explicit Layer 3 (reference) and Layer 4 (working upstream) inputs
-   - Execution transformation process
-   - Explicit Layer 4 output file names and review criteria
-4. Produce the Stage Blueprint and Handoff Matrix.
+1. **Deconstruct Workflow:** Break requirements into sequential `NN_stagename` folders.
+2. **Define Stage Contracts:** Specify explicit Layer 3 references and Layer 4 inputs/outputs for each stage.
+3. **Build Blueprint:** Generate the complete pipeline topology and handoff matrix.
 
 ---
 
 ## Outputs
 
-- `stage_blueprint.md` -> `output/stage_blueprint.md`
+| Output Deliverable | Target Path | Success Criteria |
+| :--- | :--- | :--- |
+| `stage_blueprint.md` | `output/stage_blueprint.md` | Verified stage list, numbering, inputs, processes, and outputs |

@@ -3,8 +3,7 @@
 
 # Shaped Initiatives & Executable Directives
 
-**Location:** `docs/backlog/shaped_initiatives.md`  
-**Format:** Canonical 5-Part Prompt Architecture (Identity, Task, Context, Constraints, Output Format).
+**Purpose:** Actionable, testable 5-part prompt contracts compiled from backlog ideas.
 
 ---
 
@@ -17,13 +16,15 @@
 {INITIATIVE_TASK}
 
 ### 3. Context
-- **Stack & Environment:** {INITIATIVE_STACK}
-- **References:** [`AGENT.md`](file://./AGENT.md), [`CONTEXT.md`](file://./CONTEXT.md)
+* **Stack & Environment:** {INITIATIVE_STACK}
+* **References:** [`AGENT.md`](file://./AGENT.md), [`CONTEXT.md`](file://./CONTEXT.md)
 
 ### 4. Constraints
-- {INITIATIVE_CONSTRAINT_1}
-- {INITIATIVE_CONSTRAINT_2}
+* **Positive Rules:** {INITIATIVE_CONSTRAINT_1}
+* **Negative Guardrails:** {INITIATIVE_CONSTRAINT_2}
 
-### 5. Output Format
-- **Deliverables:** `{INITIATIVE_DELIVERABLE}`
-- **Verification:** `{INITIATIVE_VERIFICATION}`
+### 5. Output & Execution Lifecycle
+* **Phase 1 (Architecture & Design):** Write specification to `docs/specs/` (or `docs/superpowers/specs/` if enabled).
+* **Phase 2 (Implementation Plan):** Write bite-sized TDD plan to `docs/plans/` (or `docs/superpowers/plans/` if enabled).
+* **Phase 3 (Deliverables & Code):** `{INITIATIVE_DELIVERABLE}`
+* **Verification Command:** `{INITIATIVE_VERIFICATION}`

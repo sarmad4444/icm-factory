@@ -1,27 +1,29 @@
-# Stage 04: Factory Reference Configuration — Contract
+# Stage 04: Factory Reference Configuration
 
-**Layer:** Layer 2 (Stage Execution Contract)  
-**Stage Name:** `04_factory_setup`
+**Purpose:** Configure Layer 3 reference files, quality standards, and onboarding questionnaires for the child workspace.
 
 ---
 
 ## Inputs
 
-- **Layer 3 (Reference):** `references/guidelines.md`
-- **Layer 3 (Reference):** `../../resources/templates/`
-- **Layer 4 (Working):** `../03_scaffolding/output/scaffolding_plan.md`
+| Layer | Source File | Description |
+| :--- | :--- | :--- |
+| **Layer 3 (Reference)** | `references/guidelines.md` | Factory reference configuration guidelines |
+| **Layer 3 (Reference)** | `../../resources/templates/` | Reference templates for standards, voice, and conventions |
+| **Layer 4 (Working)** | `../03_scaffolding/output/scaffolding_plan.md` | Scaffolding generation manifest from Stage 03 |
 
 ---
 
 ## Process
 
-1. Read the scaffolding plan.
-2. Initialize and configure all Layer 3 reference files for the child workspace (e.g. `resources/quality_standards.md`, `resources/voice.md`, `resources/conventions.md`).
-3. Set up the initial `setup/questionnaire.md` for user onboarding.
-4. Export the configured factory summary.
+1. **Configure Standards:** Populate `resources/quality_standards.md` and domain convention files.
+2. **Setup Questionnaire:** Initialize `setup/questionnaire.md` for guided user onboarding.
+3. **Export Summary:** Record configured tools, skills, and references.
 
 ---
 
 ## Outputs
 
-- `factory_configs.md` -> `output/factory_configs.md`
+| Output Deliverable | Target Path | Success Criteria |
+| :--- | :--- | :--- |
+| `factory_configs.md` | `output/factory_configs.md` | Populated Layer 3 references and configured onboarding setup |

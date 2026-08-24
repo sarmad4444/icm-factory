@@ -81,7 +81,14 @@ def test_scaffold_topology_2_managed(tmp_path):
     assert valid, f"Topology 2 invalid: {errors}"
     assert (target / "docs" / "STRATEGY.md").is_file()
     assert (target / "docs" / "phases" / "phase_01_mvp_core").is_dir()
-    assert (target / "docs" / "backlog" / "shaped_initiatives.md").is_file()
+    shaped_file = target / "docs" / "backlog" / "shaped_initiatives.md"
+    assert shaped_file.is_file()
+    shaped_content = shaped_file.read_text(encoding="utf-8")
+    assert "### 1. Identity" in shaped_content
+    assert "### 2. Task" in shaped_content
+    assert "### 3. Context" in shaped_content
+    assert "### 4. Constraints" in shaped_content
+    assert "### 5. Output & Execution Lifecycle" in shaped_content
     assert (target / "stages" / "01_spec").is_dir()
 
 
