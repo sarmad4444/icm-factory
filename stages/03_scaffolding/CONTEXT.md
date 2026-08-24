@@ -8,7 +8,7 @@
 ## Inputs
 
 - **Layer 3 (Reference):** `references/standards.md`
-- **Layer 3 (Reference):** `../../shared/templates/`
+- **Layer 3 (Reference):** `../../resources/templates/`
 - **Layer 4 (Working):** `../02_stage_mapping/output/stage_blueprint.md`
 
 ---
@@ -16,7 +16,7 @@
 ## Process
 
 1. Read the stage blueprint from Stage 02.
-2. Generate all directories under `workspaces/[workspace-name]/` (`stages/`, `_config/`, `shared/`, `setup/`).
+2. Generate all directories under `workspaces/[workspace-name]/` (`stages/`, `resources/`, `docs/`, `skills/`).
 3. Render Layer 0 (`AGENT.md`), Layer 1 (`CONTEXT.md`), and each stage's Layer 2 (`CONTEXT.md`).
 4. Output the generation manifest and scaffolding log.
 

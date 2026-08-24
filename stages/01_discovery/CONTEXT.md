@@ -7,8 +7,8 @@
 
 ## Inputs
 
-- **Layer 3 (Reference):** `references/heuristics.md`
-- **Layer 3 (Reference):** `../../_config/icm_rules.md`
+- **Layer 3 (Reference):** `references/domain_heuristics.md`
+- **Layer 3 (Reference):** `../../resources/foundations/quality_standards.md`
 - **Layer 4 (Working):** User description of desired workspace domain and problem statement
 
 ---

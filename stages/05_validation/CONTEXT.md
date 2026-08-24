@@ -8,7 +8,7 @@
 ## Inputs
 
 - **Layer 3 (Reference):** `references/checklist.md`
-- **Layer 3 (Reference):** `../../_config/icm_rules.md`
+- **Layer 3 (Reference):** `../../resources/foundations/quality_standards.md`
 - **Layer 4 (Working):** `../04_factory_setup/output/factory_configs.md`
 
 ---

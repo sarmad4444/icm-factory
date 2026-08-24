@@ -8,7 +8,7 @@
 ## Inputs
 
 - **Layer 3 (Reference):** `references/patterns.md`
-- **Layer 3 (Reference):** `../../_config/icm_rules.md`
+- **Layer 3 (Reference):** `../../resources/foundations/quality_standards.md`
 - **Layer 4 (Working):** `../01_discovery/output/domain_brief.md`
 
 ---
