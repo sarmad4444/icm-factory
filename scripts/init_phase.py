@@ -20,6 +20,23 @@ ROOT_DIR = Path(__file__).parent.parent.resolve()
 TEMPLATES_DIR = ROOT_DIR / "resources" / "templates"
 
 
+def get_template_path(name: str) -> Path:
+    """Finds template file, checking *.template.md first, then *.md.tmpl or exact name."""
+    cand1 = TEMPLATES_DIR / f"{name}.template.md"
+    if cand1.is_file():
+        return cand1
+    cand2 = TEMPLATES_DIR / f"{name}.md.tmpl"
+    if cand2.is_file():
+        return cand2
+    cand3 = TEMPLATES_DIR / f"{name}.tmpl"
+    if cand3.is_file():
+        return cand3
+    cand4 = TEMPLATES_DIR / f"{name}.md"
+    if cand4.is_file():
+        return cand4
+    return TEMPLATES_DIR / name
+
+
 def init_phase(
     name: str,
     number: int | None = None,
@@ -50,7 +67,7 @@ def init_phase(
     phase_goal = goal or f"Achieve milestone objectives for {phase_title}"
 
     # Hydrate goals.md
-    goals_tmpl_file = TEMPLATES_DIR / "goals.md.tmpl"
+    goals_tmpl_file = get_template_path("goals")
     if goals_tmpl_file.is_file():
         goals_tmpl = goals_tmpl_file.read_text(encoding="utf-8")
         goals_content = (
@@ -85,7 +102,7 @@ def init_phase(
     (phase_dir / "goals.md").write_text(goals_content, encoding="utf-8")
 
     # Hydrate tasks.md
-    tasks_tmpl_file = TEMPLATES_DIR / "tasks.md.tmpl"
+    tasks_tmpl_file = get_template_path("tasks")
     if tasks_tmpl_file.is_file():
         tasks_tmpl = tasks_tmpl_file.read_text(encoding="utf-8")
         tasks_content = (

@@ -53,7 +53,7 @@
 | [`CLAUDE.md`](file://./CLAUDE.md) | Command Runner | Quick execution cheatsheet for CLI commands |
 | `resources/foundations/` | Layer 3 Reference | [`methodology.md`](file://./resources/foundations/methodology.md), [`context_engineering.md`](file://./resources/foundations/context_engineering.md), [`quality_standards.md`](file://./resources/foundations/quality_standards.md) |
 | `resources/archetypes/` | Layer 3 Presets | 8 domain presets (`software_feature`, `agile_software_engine`, `minimal_starter`, etc.) |
-| `resources/templates/` | Layer 3 Templates | Child workspace contract templates (`AGENT.md.tmpl`, `CONTEXT.md.tmpl`, etc.) |
+| `resources/templates/` | Layer 3 Templates | Child workspace contract templates (`AGENT.template.md`, `CONTEXT.template.md`, etc.) |
 | `scripts/` | Layer 3 Tooling | `create_workspace.py`, `validate_workspace.py`, `dashboard.py`, `manage_skills.py`, `init_phase.py` |
 | `stages/` | Layer 2 Pipeline | Master 5-stage creation pipeline (`01_discovery` $\rightarrow$ `05_validation`) |
 | `workspaces/` | Layer 4 Storage | Target directory for generated child workspaces |
@@ -71,10 +71,8 @@ Child initiatives and prompt directives follow the Jake Van Clief 5-part archite
 
 ---
 
-## 6. Agent Voice & High-Signal Documentation Standard
+## 6. Agent Voice & Documentation Standard
 
-When creating, refactoring, or executing tasks in this workspace, all AI agents must adhere to this deterministic communication and documentation standard:
-* **Purpose First:** State the single-sentence mission or bottom line immediately beneath the H1 (`**Purpose:** ...`).
-* **Structured Matrices:** Present rules, stage flows, and multi-variable interfaces in clean Markdown tables.
-* **Bold Lead Keywords:** Anchor all constraints and instructions with bold keys (`* **Scope:**`, `* **Forbidden:**`, `* **Deliverable:**`).
-* **Zero Jargon:** Strictly avoid conversational fluff and third-party meta-labels.
+All AI agents in this workspace must adhere to the high-signal, zero-jargon invariants defined in [`resources/foundations/quality_standards.md` (§4)](file://./resources/foundations/quality_standards.md#4-high-signal-documentation--agent-voice-invariants):
+* **Core Policy:** Lead with top-level `**Purpose:**`, use structured Markdown tables, anchor constraints with bold keywords, and strictly eliminate conversational fluff and meta-labels.
+* **Single Source of Truth:** See [`resources/foundations/quality_standards.md`](file://./resources/foundations/quality_standards.md) for detailed invariant definitions and audit rules.

@@ -32,6 +32,23 @@ MASTER_SKILLS_DIR = ROOT_DIR / "skills"
 DEFAULT_WORKSPACES_DIR = ROOT_DIR / "workspaces"
 
 
+def get_template_path(name: str) -> Path:
+    """Finds template file, checking *.template.md first, then *.md.tmpl or exact name."""
+    cand1 = TEMPLATES_DIR / f"{name}.template.md"
+    if cand1.is_file():
+        return cand1
+    cand2 = TEMPLATES_DIR / f"{name}.md.tmpl"
+    if cand2.is_file():
+        return cand2
+    cand3 = TEMPLATES_DIR / f"{name}.tmpl"
+    if cand3.is_file():
+        return cand3
+    cand4 = TEMPLATES_DIR / f"{name}.md"
+    if cand4.is_file():
+        return cand4
+    return TEMPLATES_DIR / name
+
+
 def inject_skills(target: Path):
     target_skills = target / "skills"
     target_skills.mkdir(parents=True, exist_ok=True)
@@ -51,7 +68,7 @@ def inject_pm(target: Path, workspace_name: str):
     docs_dir.mkdir(parents=True, exist_ok=True)
 
     # 1. STRATEGY.md
-    strat_tmpl = TEMPLATES_DIR / "STRATEGY.md.tmpl"
+    strat_tmpl = get_template_path("STRATEGY")
     if strat_tmpl.is_file():
         strat_content = (
             strat_tmpl.read_text(encoding="utf-8")
@@ -108,7 +125,7 @@ def inject_compiler(target: Path, workspace_name: str):
     backlog_dir.mkdir(parents=True, exist_ok=True)
 
     # 1. raw_ideas.md
-    raw_tmpl = TEMPLATES_DIR / "raw_ideas.md.tmpl"
+    raw_tmpl = get_template_path("raw_ideas")
     if raw_tmpl.is_file():
         raw_content = (
             raw_tmpl.read_text(encoding="utf-8")
@@ -121,7 +138,7 @@ def inject_compiler(target: Path, workspace_name: str):
     (backlog_dir / "raw_ideas.md").write_text(raw_content, encoding="utf-8")
 
     # 2. shaped_initiatives.md
-    shaped_tmpl = TEMPLATES_DIR / "shaped_initiatives.md.tmpl"
+    shaped_tmpl = get_template_path("shaped_initiatives")
     if shaped_tmpl.is_file():
         shaped_content = (
             shaped_tmpl.read_text(encoding="utf-8")
@@ -314,7 +331,7 @@ def scaffold_workspace(
     skills_summary = "- `skills/`: On-demand dynamic skills catalog." if with_skills else ""
     workflows_summary = "## Stages & Workflows\n\n" + "\n".join(stages_summary_lines)
 
-    agent_tmpl = TEMPLATES_DIR / "AGENT.md.tmpl"
+    agent_tmpl = get_template_path("AGENT")
     if agent_tmpl.is_file():
         agent_content = (
             agent_tmpl.read_text(encoding="utf-8")
@@ -333,7 +350,7 @@ def scaffold_workspace(
     (target / "CLAUDE.md").write_text(claude_content, encoding="utf-8")
 
     # Render CONTEXT.md
-    context_tmpl = TEMPLATES_DIR / "CONTEXT.md.tmpl"
+    context_tmpl = get_template_path("CONTEXT")
     res_summary = "- `resources/quality_standards.md`: Project constraints and formatting guidelines."
     if with_skills:
         res_summary += "\n- `skills/CONTEXT.md`: Dynamic skills manifest."

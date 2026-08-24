@@ -9,7 +9,7 @@
 | Layer | Source File | Description |
 | :--- | :--- | :--- |
 | **Layer 3 (Reference)** | `references/standards.md` | Scaffolding directory layout and file standards |
-| **Layer 3 (Reference)** | `../../resources/templates/` | Master contract templates (`AGENT.md.tmpl`, `CONTEXT.md.tmpl`) |
+| **Layer 3 (Reference)** | `../../resources/templates/` | Master contract templates (`AGENT.template.md`, `CONTEXT.template.md`) |
 | **Layer 4 (Working)** | `../02_stage_mapping/output/stage_blueprint.md` | Validated stage blueprint from Stage 02 |
 
 ---

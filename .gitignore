@@ -4,3 +4,4 @@ __pycache__/
 .pytest_cache/
 workspaces/*
 !workspaces/.gitkeep
+graphify-out/

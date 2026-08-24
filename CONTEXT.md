@@ -22,8 +22,8 @@
 | Goal / Intent | Action / Tool | Command / Contract | Expected Output |
 | :--- | :--- | :--- | :--- |
 | **Initialize New Sprint Phase** | Sprint Initializer | `uv run python scripts/init_phase.py [name] --goal "[goal]"` | `docs/phases/phase_NN_[name]/` |
-| **View Active Strategy & Status** | Live Strategy Doc | Read [`resources/templates/STRATEGY.md.tmpl`](file://./resources/templates/STRATEGY.md.tmpl) | Live sprint & roadmap pointer |
-| **Compile 5-Part Prompt Initiative** | Prompt Compiler | Read [`resources/templates/shaped_initiatives.md.tmpl`](file://./resources/templates/shaped_initiatives.md.tmpl) | Executable prompt contract in `docs/backlog/` |
+| **View Active Strategy & Status** | Live Strategy Doc | Read [`resources/templates/STRATEGY.template.md`](file://./resources/templates/STRATEGY.template.md) | Live sprint & roadmap pointer |
+| **Compile 5-Part Prompt Initiative** | Prompt Compiler | Read [`resources/templates/shaped_initiatives.template.md`](file://./resources/templates/shaped_initiatives.template.md) | Executable prompt contract in `docs/backlog/` |
 
 ### Category 3: Dynamic Skills & JIT Loading
 | Goal / Intent | Action / Tool | Command / Contract | Expected Output |

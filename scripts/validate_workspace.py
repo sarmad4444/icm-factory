@@ -42,7 +42,7 @@ class ValidationResult(tuple):
         return (self.valid, self.errors, self.warnings)
 
 
-def detect_git_and_prompt_safety(workspace_path: Path | str, non_interactive: bool = False) -> str:
+def detect_git_and_prompt_safety(workspace_path: Path | str, non_interactive: bool = False) -> tuple[bool, str]:
     path = Path(workspace_path).resolve()
     # Check if inside git repository
     current = path
@@ -59,14 +59,17 @@ def detect_git_and_prompt_safety(workspace_path: Path | str, non_interactive: bo
             "It is strongly advised to run automated repairs on an isolated branch "
             "(e.g., `git checkout -b chore/icm-governance-fix`) or in a dedicated git worktree."
         )
-        if not non_interactive:
-            print(f"\n{advice}\n")
-            ans = input("Proceed with auto-fix on current workspace state? [y/N]: ").strip().lower()
-            if ans not in ["y", "yes"]:
-                print("Auto-fix aborted by user for git safety.")
-                return advice
-        return advice
-    return "No git repository detected."
+        if not non_interactive and hasattr(sys.stdin, "isatty") and sys.stdin.isatty():
+            try:
+                print(f"\n{advice}\n")
+                ans = input("Proceed with auto-fix on current workspace state? [y/N]: ").strip().lower()
+                if ans not in ["y", "yes"]:
+                    print("Auto-fix aborted by user for git safety.")
+                    return False, advice
+            except (EOFError, KeyboardInterrupt):
+                return False, advice
+        return True, advice
+    return True, "No git repository detected."
 
 
 def auto_fix_workspace(workspace_path: Path | str) -> list[str]:
@@ -370,8 +373,9 @@ def validate_workspace(
         return ValidationResult(False, [f"Directory does not exist: {path}"], [])
 
     if fix:
-        detect_git_and_prompt_safety(path, non_interactive=non_interactive)
-        auto_fix_workspace(path)
+        allowed, _ = detect_git_and_prompt_safety(path, non_interactive=non_interactive)
+        if allowed:
+            auto_fix_workspace(path)
 
     all_errors: list[str] = []
     all_warnings: list[str] = []

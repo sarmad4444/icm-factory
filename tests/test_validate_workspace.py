@@ -145,7 +145,8 @@ def test_auto_fix_missing_outputs(tmp_path):
 def test_git_safety_advice(tmp_path):
     # Simulate git repo
     (tmp_path / ".git").mkdir()
-    advice = detect_git_and_prompt_safety(tmp_path, non_interactive=True)
+    proceed, advice = detect_git_and_prompt_safety(tmp_path, non_interactive=True)
+    assert proceed is True
     assert "Git Safety" in advice or "git worktree" in advice or "branch" in advice
 
 

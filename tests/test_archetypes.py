@@ -12,14 +12,14 @@ def test_required_templates_exist():
     assert templates_dir.is_dir(), "resources/templates directory must exist"
     
     required_templates = [
-        "AGENT.md.tmpl",
-        "CONTEXT.md.tmpl",
-        "skills_CONTEXT.md.tmpl",
-        "STRATEGY.md.tmpl",
-        "goals.md.tmpl",
-        "tasks.md.tmpl",
-        "raw_ideas.md.tmpl",
-        "shaped_initiatives.md.tmpl",
+        "AGENT.template.md",
+        "CONTEXT.template.md",
+        "skills_CONTEXT.template.md",
+        "STRATEGY.template.md",
+        "goals.template.md",
+        "tasks.template.md",
+        "raw_ideas.template.md",
+        "shaped_initiatives.template.md",
     ]
     
     for tmpl in required_templates:
