@@ -13,7 +13,7 @@
 | `caveman` | `skills/caveman/SKILL.md` | "caveman mode, ultra terse, token efficient, terse mode" | `https://github.com/JuliusBrussee/caveman` | `v1.0.0 (789abc0)` |
 | `graphify` | `skills/graphify/SKILL.md` | "graphify", "knowledge graph", "code relationships" | `https://github.com/obra/graphify` | `v2.0.1 (e4f5g6h)` |
 | `superpowers` | `skills/superpowers/SKILL.md` | "superpowers, tdd, test-driven-development, systematic-debugging, writing-plans, executing-plans" | `https://github.com/obra/superpowers` | `v3.4.0` |
-| `workspace-architect` | `skills/workspace-architect/SKILL.md` | "create workspace, design architecture, brainstorm project, configure workspace, enhance workspace" | `local/master` | `v1.0.0 (master)` |
+| `workspace-architect` | `skills/workspace-architect/SKILL.md` | "create workspace, design architecture, brainstorm project, configure workspace, enhance workspace, install skill, audit skill, should we install" | `local/master` | `v1.1.0` |
 
 ---
 

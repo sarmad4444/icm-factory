@@ -23,7 +23,7 @@
 | **Layer 0** | `AGENT.md` (or `CLAUDE.md` / `GEMINI.md`) | Master workspace identity, operating constraints, and topologies |
 | **Layer 1** | `CONTEXT.md` (root) | Master intent router and task dispatcher |
 | **Layer 2** | `stages/NN_<stagename>/CONTEXT.md` | Local stage contracts defining `## Inputs`, `## Process`, and `## Outputs` |
-| **Layer 3** | `resources/` or `stages/NN_*/references/` | Static constraints, conventions, and quality standards |
+| **Layer 3** | `resources/` or `skills/` | Static constraints, conventions, quality standards, and dynamic JIT tools |
 | **Layer 4** | `stages/NN_<stagename>/output/` | Per-run intermediate and final deliverables |
 
 ---
@@ -37,7 +37,19 @@
 
 ---
 
-## 4. High-Signal Documentation & Agent Voice Invariants
+## 4. Universal Skill & Plugin Governance Standards (Layer 3)
+
+| Standard Invariant | Rule Description | Verification Criteria |
+| :--- | :--- | :--- |
+| **Single Source of Truth** | Canonical tool instructions live in `skills/<name>/SKILL.md` | Zero prompt text duplicated across stage contracts |
+| **Manifest Synchronization** | All installed skills must be cataloged in `skills/CONTEXT.md` | Automatically verified and synced via `manage_skills.py sync` |
+| **YAML Frontmatter** | Every skill must have `name`, `description`, `trigger`, `url`, `version` | Checked by Tier 3 compliance linter |
+| **Just-In-Time (JIT) Loading** | Skills are loaded only when their trigger phrase is active | Never loaded unconditionally into root prompts |
+| **Multi-Channel Installation** | Supported via `bunx skills add`, `npx`, git clone, or local sync | Non-destructive targeting of `./skills/` directory |
+
+---
+
+## 5. High-Signal Documentation & Agent Voice Invariants
 
 | Standard Invariant | Rule Description | Verification Criteria |
 | :--- | :--- | :--- |
@@ -48,7 +60,7 @@
 
 ---
 
-## 5. Multi-Agent Chamber & Handoff Invariants
+## 6. Multi-Agent Chamber & Handoff Invariants
 
 | Chamber Invariant | Rule Description | Verification Criteria |
 | :--- | :--- | :--- |
@@ -56,4 +68,3 @@
 | **Scoped Skill Envelope** | Agents mount only authorized dynamic skills from `skills/` | Verified against `skills/` directory on disk |
 | **Explicit Guardrails** | Every agent declares negative boundary constraints | Must contain `* **Forbidden:**` anchors |
 | **Plain-Text Handoffs** | Inter-agent requests written to disk in Markdown | Output to `docs/phases/*/handoffs/` |
-

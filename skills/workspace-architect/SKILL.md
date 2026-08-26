@@ -1,9 +1,9 @@
 ---
 name: workspace-architect
-description: Master architectural consultant for Socratic ideation, workspace topology recommendation, dynamic skills provisioning, and child workspace enhancement.
-trigger: create workspace, design architecture, brainstorm project, configure workspace, enhance workspace
+description: Master architectural consultant for Socratic ideation, workspace topology recommendation, dynamic skills provisioning, consultative skill auditing, and child workspace lifecycle governance.
+trigger: create workspace, design architecture, brainstorm project, configure workspace, enhance workspace, install skill, audit skill, should we install
 url: local/master
-version: v1.0.0
+version: v1.1.0
 ---
 
 # Workspace Architect & Lifecycle Manager Skill
@@ -19,6 +19,7 @@ Activate this skill whenever the user:
 - Wants to initialize or configure a new child workspace in `./workspaces/[workspace-name]`.
 - Wants to wrap an existing codebase (`--adopt`) into the ICM control plane.
 - Wants to enhance, evolve, or add sprint phases/skills to an existing child workspace.
+- Asks whether a GitHub skill/tool should be installed (e.g. *"Should we install this skill? `<URL>`"* or *"Install `<URL>`"*).
 
 ---
 
@@ -30,11 +31,13 @@ graph TD
     B -->|"Fuzzy / New Idea"| C["Mode 1: Socratic Brainstorming"]
     B -->|"Ready to Scaffold"| D["Mode 2: Blueprint & Approval Gate"]
     B -->|"Evolve Existing Workspace"| E["Mode 3: Workspace Enhancer"]
+    B -->|"Evaluate / Install Skill"| F["Mode 5: Skill Intake & Audit Protocol"]
     
     C --> D
-    D --> F["CLI Scaffolding & Skill Installation"]
-    F --> G["4-Tier Compliance Validation"]
-    E --> H["Phase Init / Skill Add / Health Audit"]
+    D --> G["CLI Scaffolding & Skill Installation"]
+    G --> H["4-Tier Compliance Validation"]
+    E --> I["Phase Init / Skill Add / Health Audit"]
+    F --> J["Audit Score [N V F] ➔ Multi-Channel Install ➔ Manifest Sync"]
 ```
 
 ---
@@ -46,7 +49,7 @@ When the user enters with a rough, fuzzy, or underspecified idea:
 2. **Probe Key Boundaries**:
    - What is the primary product/engineering outcome?
    - What are explicit **non-goals** for the first version (MVP)?
-   - What is the runtime stack (Python, TypeScript, Go, etc.)?
+   - What is the runtime stack (Python, TypeScript, Svelte, Go, etc.)?
    - Does this project involve separate lifecycle pipelines (e.g. backend service vs deployment infrastructure)?
 3. **Prune Decisions**: Discourage premature microservices, bloated frameworks, or unnecessary complexity.
 
@@ -75,9 +78,10 @@ Before executing any scaffolding command, render a clean Markdown preview table 
 | **Directory** | `./workspaces/[workspace_name]/` |
 | **Pipeline Stages** | `01_spec` → `02_tdd` → `03_implementation` → `04_verification` |
 | **Project Brain** | `docs/STRATEGY.md`, `docs/phases/phase_01_mvp_core/` |
-| **Dynamic Skills** | `superpowers` (TDD/debugging), `adhd` (decision pruning) |
+| **Dynamic Skills Catalog** | Enabled (`superpowers`, `graphify`, `adhd`) |
+| **Skill & Plugin Governance** | Enabled (`--with-skill-governance`) |
 
-*Shall I scaffold this workspace and install the selected skills now?*
+*Shall I scaffold this workspace and configure the selected skills now?*
 ```
 
 ---
@@ -88,15 +92,15 @@ Upon receiving user approval, execute the following commands in sequence:
 
 1. **Scaffold the Workspace**:
    ```bash
-   uv run python scripts/create_workspace.py --name [name] --topology [1|2|3|4] --with-pm --with-compiler --with-skills
+   uv run python scripts/create_workspace.py --name [name] --topology [1|2|3|4] --with-pm --with-compiler --with-skills --with-skill-governance
    ```
 2. **Install Any Additional Community Skills**:
    ```bash
-   uv run python scripts/manage_skills.py add [skill_name] --url [github_url] --workspace "./workspaces/[name]"
+   uv run python scripts/manage_skills.py add [url_or_name] --workspace "./workspaces/[name]"
    ```
 3. **Verify Compliance**:
    ```bash
-   uv run python scripts/validate_workspace.py "./workspaces/[name]"
+   uv run python scripts/validate_workspace.py "./workspaces/[name]" --fix
    ```
 4. **Hand Off Briefing**:
    - Provide the user with the exact path (`cd workspaces/[name]`) and instructions on how to begin their first sprint phase.
@@ -112,9 +116,36 @@ When the user asks to manage or enhance an existing workspace:
   ```
 - **To add/sync community skills**:
   ```bash
-  uv run python scripts/manage_skills.py add [skill_name] --workspace "./workspaces/[name]"
+  uv run python scripts/manage_skills.py add [skill_name_or_url] --workspace "./workspaces/[name]"
   ```
 - **To run a health check or auto-fix**:
   ```bash
   uv run python scripts/validate_workspace.py "./workspaces/[name]" --fix
   ```
+
+---
+
+## Mode 5: Universal Skill Intake, Audit & Lifecycle Protocol
+
+When the user asks to evaluate or install an external tool (e.g. *"Should we install `<URL>`?"* or *"Install `<URL>`"*):
+
+1. **Phase 1: Consultative Intake & 4-Dimension Audit (`manage_skills.py audit <URL>`)**:
+   - Evaluate across:
+     - **Signal-to-Noise Ratio (35%):** Actionable heuristics vs. conversational fluff.
+     - **Token Footprint (25%):** Modular JIT loading vs. monolithic prompt bloat.
+     - **Stack Fit (25%):** Compatibility with target project conventions.
+     - **Maintenance (15%):** Version-pinned and git-canonical.
+   - Run `/adhd` 5-frame scoring `[N V F]`. If motive or stack fit is ambiguous, ask 1 focused clarifying question.
+2. **Phase 2: Official Installation Discovery**:
+   - Detect the author's intended installation method:
+     - Preferred in ICM Factory / Windows PowerShell: `bunx skills add <pkg>`
+     - Generic Node fallback: `npx skills add <pkg>`
+     - Git repository fallback: `git clone --depth 1 <url> skills/<name>`
+3. **Phase 3: Manifest Normalization**:
+   - Parse YAML frontmatter (`name`, `description`, `trigger`, `url`, `version`).
+   - Run `manage_skills.py sync --workspace <path>` to update `skills/CONTEXT.md`.
+4. **Phase 4: In-Chat Anti-Slop Usage Brief**:
+   - Output a concise 3-bullet summary:
+     - *What to use:* Key heuristics, schemas, or tables provided by the skill.
+     - *What to filter:* Incompatible framework advice (e.g. ignore React advice in Svelte projects).
+     - *How to trigger:* The exact trigger phrase registered in `skills/CONTEXT.md`.

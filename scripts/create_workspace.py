@@ -162,6 +162,9 @@ def inject_governance(target: Path):
     val_source = ROOT_DIR / "scripts" / "validate_workspace.py"
     if val_source.is_file():
         shutil.copy(val_source, scripts_dir / "validate_workspace.py")
+    mgr_source = ROOT_DIR / "scripts" / "manage_skills.py"
+    if mgr_source.is_file():
+        shutil.copy(mgr_source, scripts_dir / "manage_skills.py")
 
 
 def inject_agents(target: Path, workspace_name: str):
@@ -640,7 +643,7 @@ def main():
     parser.add_argument("--with-pm", action="store_true", help="Add Project Management (docs/STRATEGY.md, phases)")
     parser.add_argument("--with-compiler", action="store_true", help="Add 5-Part Prompt Compiler (docs/backlog)")
     parser.add_argument("--with-skills", action="store_true", help="Add curated master skills bundle")
-    parser.add_argument("--with-governance", action="store_true", help="Inject local validate_workspace.py")
+    parser.add_argument("--with-skill-governance", "--with-governance", dest="with_governance", action="store_true", help="Add dynamic skill management & governance capabilities")
     parser.add_argument("--with-agents", action="store_true", help="Add Layer 2/3 multi-agent specialist chambers (agents/) and handoff directory")
     parser.add_argument("--interactive", action="store_true", help="Launch interactive creation wizard")
     args = parser.parse_args()

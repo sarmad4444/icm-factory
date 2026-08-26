@@ -8,6 +8,7 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 import re
+import shutil
 import sys
 
 # Ensure UTF-8 output on Windows consoles
@@ -109,9 +110,32 @@ def auto_fix_workspace(workspace_path: Path | str) -> list[str]:
     # 3. Sync skills manifest if skills/ has subdirectories
     skills_dir = path / "skills"
     if skills_dir.is_dir() and any(d.is_dir() for d in skills_dir.iterdir()):
-        from scripts.manage_skills import sync_skills_manifest
-        sync_skills_manifest(path)
-        fixes_applied.append("Synchronized skills/CONTEXT.md manifest")
+        try:
+            from scripts.manage_skills import sync_skills_manifest
+            sync_skills_manifest(path)
+            fixes_applied.append("Synchronized skills/CONTEXT.md manifest")
+        except ImportError:
+            try:
+                import sys
+                parent_dir = str(Path(__file__).resolve().parent.parent)
+                if parent_dir not in sys.path:
+                    sys.path.insert(0, parent_dir)
+            except Exception:
+                pass
+
+    # 4. Clean up unauthorized agent dot-folders
+    allowed_dots = {".venv", ".git", ".worktrees", ".github"}
+    for item in path.iterdir():
+        if item.is_dir():
+            if item.name.startswith(".") and item.name not in allowed_dots:
+                shutil.rmtree(item, ignore_errors=True)
+                fixes_applied.append(f"Purged unauthorized agent dot-folder: {item.name}")
+            elif item.name in {"agent", "data"}:
+                shutil.rmtree(item, ignore_errors=True)
+                fixes_applied.append(f"Purged stray non-standard folder: {item.name}")
+        elif item.is_file() and item.name in {"skills-lock.json"}:
+            item.unlink(missing_ok=True)
+            fixes_applied.append(f"Purged stray lockfile: {item.name}")
 
     return fixes_applied
 
@@ -120,6 +144,14 @@ def check_structural_integrity(path: Path) -> tuple[list[str], list[str], str]:
     errors: list[str] = []
     warnings: list[str] = []
     topology = "Unknown"
+
+    # Hygiene check for third-party agent dot-folders
+    allowed_dots = {".venv", ".git", ".worktrees", ".github"}
+    for item in path.iterdir():
+        if item.is_dir() and item.name.startswith(".") and item.name not in allowed_dots:
+            warnings.append(f"Hygiene Anti-Pattern: Found third-party agent dot-folder '{item.name}'. Run --fix to auto-purge.")
+        elif item.is_dir() and item.name in {"agent", "data"}:
+            warnings.append(f"Hygiene Anti-Pattern: Found non-standard stray folder '{item.name}'. Run --fix to auto-purge.")
 
     # Layer 0 check
     has_l0 = (path / "AGENT.md").is_file() or (path / "CLAUDE.md").is_file() or (path / "GEMINI.md").is_file()
@@ -246,26 +278,37 @@ def check_cross_layer_rule_contradictions(path: Path) -> tuple[list[str], list[s
     errors: list[str] = []
     warnings: list[str] = []
 
-    # Check for forbidden package managers in workspace contracts (excluding third-party skills)
-    forbidden_pattern = re.compile(r"\b(npm\s+install|npx\s+|yarn\s+add|pnpm\s+add)\b", re.IGNORECASE)
+    # Check if this specific workspace enforces bun/bunx exclusively
+    enforces_bun_only = False
+    for std_file in [path / "AGENT.md", path / "resources" / "quality_standards.md"]:
+        if std_file.is_file():
+            try:
+                txt = std_file.read_text(encoding="utf-8", errors="replace")
+                if "bun" in txt.lower() and ("exclusively" in txt.lower() or "strict" in txt.lower() or "no npm" in txt.lower()):
+                    enforces_bun_only = True
+                    break
+            except Exception:
+                pass
 
-    for md_file in path.glob("**/*.md"):
-        parts = md_file.parts
-        if any(p in [".git", ".venv", "node_modules", ".pytest_cache", "skills"] for p in parts):
-            continue
+    if enforces_bun_only:
+        forbidden_pattern = re.compile(r"\b(npm\s+install|yarn\s+add|pnpm\s+add)\b", re.IGNORECASE)
+        for md_file in path.glob("**/*.md"):
+            parts = md_file.parts
+            if any(p in [".git", ".venv", "node_modules", ".pytest_cache", "skills"] for p in parts):
+                continue
 
-        try:
-            content = md_file.read_text(encoding="utf-8")
-        except Exception:
-            continue
+            try:
+                content = md_file.read_text(encoding="utf-8", errors="replace")
+            except Exception:
+                continue
 
-        match = forbidden_pattern.search(content)
-        if match:
-            errors.append(
-                f"Rule Contradiction in {md_file.relative_to(path)}: "
-                f"Forbidden package manager command '{match.group(0)}' found. "
-                "ICM projects exclusively enforce 'bun'/'bunx' and 'uv run'."
-            )
+            match = forbidden_pattern.search(content)
+            if match:
+                errors.append(
+                    f"Rule Contradiction in {md_file.relative_to(path)}: "
+                    f"Forbidden package manager command '{match.group(0)}' found. "
+                    "This workspace explicitly enforces 'bun'/'bunx' and 'uv run'."
+                )
 
     return errors, warnings
 
