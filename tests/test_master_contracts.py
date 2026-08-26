@@ -9,8 +9,9 @@ from scripts.validate_workspace import validate_workspace
 
 
 def test_master_agent_contract_spec_coverage():
-    agent_file = ROOT_DIR / "AGENT.md"
-    assert agent_file.is_file(), "Master AGENT.md must exist"
+    agent_file = ROOT_DIR / "AGENTS.md"
+    assert agent_file.is_file(), "Master AGENTS.md must exist"
+    assert not (ROOT_DIR / "AGENT.md").exists(), "Legacy root AGENT.md must not exist"
     content = agent_file.read_text(encoding="utf-8")
 
     # Verify 4 Topologies documented

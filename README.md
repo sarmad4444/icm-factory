@@ -41,7 +41,7 @@ Current AI agent frameworks (CrewAI, LangGraph, AutoGen) attempt to manage agent
 
 **ICM Factory** replaces framework-level code orchestration with **filesystem architecture**:
 * **Stages are Folders:** Numbered directories (`01_spec/`, `02_tdd/`, `03_impl/`, `04_verify/`) isolate tasks into single-responsibility boundaries.
-* **Contracts are Markdown:** Plain text files (`CONTEXT.md`, `AGENT.md`) carry the explicit instructions, tool whitelists, and quality constraints.
+* **Contracts are Markdown:** Plain text files (`CONTEXT.md`, `AGENTS.md`) carry the explicit instructions, tool whitelists, and quality constraints.
 * **Every Output is an Edit Surface:** Intermediate deliverables land on disk in `output/` so humans can inspect, edit, or steer work mid-run.
 * **100% LLM-Agnostic:** Works seamlessly with Claude Code, Google Antigravity, OpenCode, Codex, Cursor, or pure Python scripts.
 

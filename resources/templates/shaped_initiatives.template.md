@@ -17,7 +17,7 @@
 
 ### 3. Context
 * **Stack & Environment:** {INITIATIVE_STACK}
-* **References:** [`AGENT.md`](file://./AGENT.md), [`CONTEXT.md`](file://./CONTEXT.md)
+* **References:** [`AGENTS.md`](file://./AGENTS.md), [`CONTEXT.md`](file://./CONTEXT.md)
 
 ### 4. Constraints
 * **Positive Rules:** {INITIATIVE_CONSTRAINT_1}

@@ -20,7 +20,7 @@
 
 | Resource / Directory | Role | Description |
 | :--- | :--- | :--- |
-| [`AGENT.md`](file://./AGENT.md) | Identity Contract | Project identity, operating rules, and floor plan |
+| [`AGENTS.md`](file://./AGENTS.md) | Identity Contract | Project identity, operating rules, and floor plan |
 | [`CONTEXT.md`](file://./CONTEXT.md) | Task Router | Master intent router mapping goals to stage contracts |
 | `resources/quality_standards.md` | Quality Standards | Project-specific style rules and quality constraints |
 {OPTIONAL_DOCS_SUMMARY}

@@ -17,7 +17,7 @@
 ## Process
 
 1. **Create Directories:** Generate `stages/`, `resources/`, `docs/`, and `skills/` under `workspaces/[name]/`.
-2. **Render Contracts:** Populate Layer 0 (`AGENT.md`), Layer 1 (`CONTEXT.md`), and stage Layer 2 (`CONTEXT.md`).
+2. **Render Contracts:** Populate Layer 0 (`AGENTS.md`), Layer 1 (`CONTEXT.md`), and stage Layer 2 (`CONTEXT.md`).
 3. **Log Manifest:** Output the generation manifest and file creation record.
 
 ---

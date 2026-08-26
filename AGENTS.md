@@ -68,7 +68,7 @@
 | [`GEMINI.md`](file://./GEMINI.md) | Antigravity Pointer | Quick execution cheatsheet for Google Antigravity |
 | `resources/foundations/` | Layer 3 Reference | [`methodology.md`](file://./resources/foundations/methodology.md), [`context_engineering.md`](file://./resources/foundations/context_engineering.md), [`quality_standards.md`](file://./resources/foundations/quality_standards.md) |
 | `resources/archetypes/` | Layer 3 Presets | 8 domain presets (`software_feature`, `agile_software_engine`, `minimal_starter`, etc.) |
-| `resources/templates/` | Layer 3 Templates | Child workspace contract templates (`AGENT.template.md`, `CONTEXT.template.md`, etc.) |
+| `resources/templates/` | Layer 3 Templates | Child workspace contract templates (`AGENTS.template.md`, `CONTEXT.template.md`, etc.) |
 | `scripts/` | Layer 3 Tooling | `create_workspace.py`, `validate_workspace.py`, `dashboard.py`, `manage_skills.py`, `init_phase.py` |
 | `stages/` | Layer 2 Pipeline | Master 5-stage creation pipeline (`01_discovery` $\rightarrow$ `05_validation`) |
 | `workspaces/` | Layer 4 Storage | Target directory for generated child workspaces |
