@@ -21,6 +21,8 @@
 * **Root Role:** This root workspace is the master control plane (**Factory of Workspaces**) for context engineering and multi-topology generation.
 * **Child Isolation:** All child workspaces reside in `./workspaces/[name]` and remain 100% self-contained and independently executable.
 * **Tooling Standard:** Run Python tools via `uv run` and Node/skill utilities via `bun`/`bunx` on Windows PowerShell.
+* **Graphify-First Navigation:** For any question about the codebase, its architecture, file relationships, symbol usages, or project content, the agent MUST query Graphify first (`graphify query "<question>"` or consult `graphify-out/graph.json` / `GRAPH_REPORT.md`) before resorting to blind directory searches or full file scans.
+* **Post-Modification Graphify Sync & Audit:** Whenever code, contracts, or documentation files are created, modified, or deleted during a task, the agent MUST execute Graphify incremental update (`graphify --update` / `graphify extract .`) at the end of the task, verify graph health and diagnostics, and run the final audit before declaring completion.
 * **Default Scope:** All scripts (`validate_workspace.py`, `create_workspace.py`, `dashboard.py`, `manage_skills.py`) default to project scope (`.`) unless `--workspace ./workspaces/[name]` is specified.
 
 ### 3-Tier "Folder as App" Floor Plan

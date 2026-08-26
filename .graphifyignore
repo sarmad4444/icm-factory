@@ -1,0 +1,7 @@
+﻿# Ignore child workspaces from master control plane knowledge graph
+workspaces/
+
+# Caches and runtime virtual environments
+.venv/
+.pytest_cache/
+__pycache__/

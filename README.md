@@ -140,15 +140,16 @@ workspaces/[my-project]/
 3. **Topology 3 (Multi-Workflow Pipeline):** Parallel domain pipelines (`workflows/backend/`, `workflows/frontend/`).
 4. **Topology 4 (Enterprise Engine):** Complete system combining multi-domain workflows, strategic roadmaps, and full governance.
 
-### 7 Pluggable Add-Ons
+### 8 Pluggable Add-Ons (Utilities)
 | Add-On Flag | Name | Capabilities Injected |
 | :--- | :--- | :--- |
 | `--with-pm` | **Agile Project Management** | Injects `docs/STRATEGY.md`, `docs/phases/`, `goals.md`, and `tasks.md`. |
 | `--with-compiler` | **5-Part Prompt Compiler** | Injects `docs/backlog/` (`raw_ideas.md` $\rightarrow$ `shaped_initiatives.md`). |
 | `--with-agents` | **Multi-Agent Specialist Chambers** | Injects `agents/` recursive sub-chambers, dispatcher matrix, and sprint `handoffs/`. |
 | `--multi-workflow` | **Multi-Domain Orchestrator** | Organizes stages under `workflows/<domain>/stages/`. |
-| `--with-skills` | **Curated Skills Bundle** | Injects JIT-loadable `skills/` (`workspace-architect`, `superpowers`, `adhd`, `graphify`). |
-| `--with-governance` | **Local Self-Validator** | Injects a standalone `scripts/validate_workspace.py` inside the child workspace. |
+| `--with-skills` | **Curated Skills Bundle** | Injects JIT-loadable `skills/` (`workspace-architect`, `superpowers`, `graphify`). |
+| `--with-skill-governance`, `--with-governance` | **Universal Skill Lifecycle Manager** | Dynamic installer, 4-dimension audit scoring, auto-sync manifest. |
+| `--telemetry-style` | **Pluggable Response Telemetry** | Injects chosen telemetry style (`pill-bar`, `terminal-box`, `cockpit-hud`, etc.). |
 | `--adopt <path>` | **Legacy Codebase Adapter** | Non-destructively wraps an existing repo into ICM without moving files. |
 
 ---

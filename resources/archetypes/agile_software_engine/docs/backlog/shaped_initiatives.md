@@ -15,7 +15,7 @@ Scaffold core entity interfaces, unit test suite, and validation contracts.
 
 ### 3. Context
 - **Stack & Environment:** Python 3.11+, pytest, uv
-- **References:** [`AGENT.md`](file://./AGENT.md), [`docs/STRATEGY.md`](file://./docs/STRATEGY.md)
+- **References:** [`AGENTS.md`](file://./AGENTS.md), [`docs/STRATEGY.md`](file://./docs/STRATEGY.md)
 
 ### 4. Constraints
 - Zero external network dependencies in unit tests.

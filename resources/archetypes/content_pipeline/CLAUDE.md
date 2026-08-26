@@ -1,4 +1,4 @@
 # Content Pipeline
 
-Please refer to [`AGENT.md`](file://./AGENT.md) for agent identity, operating rules, and stage topology.
+Please refer to [`AGENTS.md`](file://./AGENTS.md) for agent identity, operating rules, and stage topology.
 Refer to [`CONTEXT.md`](file://./CONTEXT.md) for task routing.

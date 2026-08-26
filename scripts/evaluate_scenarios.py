@@ -157,8 +157,8 @@ def run_scenario_4_governance_conflicts(target_path: Path) -> tuple[bool, str]:
             stages=["stage_one", "stage_two"],
         )
 
-        # Inject forbidden command (npm install) and broken link into AGENT.md
-        agent_file = target_path / "AGENT.md"
+        # Inject forbidden command (npm install) and broken link into AGENTS.md
+        agent_file = target_path / "AGENTS.md" if (target_path / "AGENTS.md").is_file() else target_path / "AGENT.md"
         agent_text = agent_file.read_text(encoding="utf-8")
         corrupted_agent = (
             agent_text

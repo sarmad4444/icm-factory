@@ -20,7 +20,8 @@ def test_scaffold_from_archetype(tmp_path):
     assert success
     valid, errors = validate_workspace(target)
     assert valid, f"Scaffolded workspace invalid: {errors}"
-    assert (target / "AGENT.md").exists()
+    assert (target / "AGENTS.md").exists()
+    assert not (target / "AGENT.md").exists()
     assert (target / "CLAUDE.md").exists()
     assert (target / "CONTEXT.md").exists()
     assert (target / "stages" / "01_research" / "output").exists()
@@ -42,7 +43,8 @@ def test_scaffold_custom_workspace(tmp_path):
     assert success
     valid, errors = validate_workspace(target)
     assert valid, f"Custom workspace invalid: {errors}"
-    assert (target / "AGENT.md").exists()
+    assert (target / "AGENTS.md").exists()
+    assert not (target / "AGENT.md").exists()
     assert (target / "CLAUDE.md").exists()
     assert (target / "stages" / "01_extract" / "CONTEXT.md").exists()
     assert (target / "stages" / "02_transform" / "CONTEXT.md").exists()
@@ -164,7 +166,8 @@ def test_adopt_existing_codebase(tmp_path):
     # Verify ICM control plane was created and is 100% compliant
     valid, errors = validate_workspace(adopted_target)
     assert valid, f"Adopted workspace failed validation: {errors}"
-    assert (adopted_target / "AGENT.md").is_file()
+    assert (adopted_target / "AGENTS.md").is_file()
+    assert not (adopted_target / "AGENT.md").exists()
     assert (adopted_target / "CONTEXT.md").is_file()
     assert (adopted_target / "docs" / "STRATEGY.md").is_file()
 
@@ -185,7 +188,7 @@ def test_scaffold_with_agents(tmp_path):
     assert (target / "agents" / "lead_engineer" / "AGENT.md").is_file()
     assert (target / "docs" / "phases" / "phase_01_mvp_core" / "handoffs").is_dir()
     
-    agent_text = (target / "AGENT.md").read_text(encoding="utf-8")
+    agent_text = (target / "AGENTS.md").read_text(encoding="utf-8")
     assert "agents/" in agent_text
     
     ctx_text = (target / "CONTEXT.md").read_text(encoding="utf-8")

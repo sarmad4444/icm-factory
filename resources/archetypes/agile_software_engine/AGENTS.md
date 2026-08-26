@@ -17,7 +17,7 @@
 
 ## 2. Floor Plan
 
-- `AGENT.md`: This file — Project rules and operating guide.
+- `AGENTS.md`: This file — Project rules and operating guide.
 - `CONTEXT.md`: Intent router for project navigation.
 - `docs/STRATEGY.md`: Active sprint phase, milestone roadmap, and task conventions.
 - `docs/phases/`: Objective sprint phases containing `goals.md` and `tasks.md`.

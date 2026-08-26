@@ -12,7 +12,7 @@ def test_required_templates_exist():
     assert templates_dir.is_dir(), "resources/templates directory must exist"
     
     required_templates = [
-        "AGENT.template.md",
+        "AGENTS.template.md",
         "CONTEXT.template.md",
         "skills_CONTEXT.template.md",
         "STRATEGY.template.md",

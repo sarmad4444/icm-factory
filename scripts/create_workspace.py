@@ -479,7 +479,8 @@ def scaffold_workspace(
             agent_content = agent_content + telemetry_header
 
     (target / "AGENTS.md").write_text(agent_content, encoding="utf-8")
-    (target / "AGENT.md").write_text(agent_content, encoding="utf-8")
+    if (target / "AGENT.md").is_file():
+        (target / "AGENT.md").unlink(missing_ok=True)
 
     # Render CLAUDE.md and GEMINI.md pointers
     claude_content = (
@@ -551,7 +552,8 @@ def scaffold_from_archetype(
         content = source_file.read_text(encoding="utf-8")
         content = f"# {ws_name} — Agent Operating Guide\n\n**Mission:** {ws_desc}\n**Framework:** Interpretable Context Methodology (ICM)\n\n" + content[content.find("## ") if "## " in content else 0:]
         (target / "AGENTS.md").write_text(content, encoding="utf-8")
-        (target / "AGENT.md").write_text(content, encoding="utf-8")
+    if agent_file.is_file():
+        agent_file.unlink(missing_ok=True)
 
     setup_dir = target / "setup"
     setup_dir.mkdir(exist_ok=True)
