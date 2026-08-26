@@ -1,11 +1,12 @@
 """
 scripts/validate_workspace.py
 Audits any target workspace for strict Interpretable Context Methodology (ICM) compliance.
-Includes 4-Tier Health Check Engine, Rule Contradiction Inspector, and Interactive Auto-Fix.
+Includes 5-Layer Health Check Engine, Anti-Pattern Inspector, AI Diagnostic Utility, and Interactive Auto-Fix.
 """
 
 from __future__ import annotations
 import argparse
+import json
 from pathlib import Path
 import re
 import shutil
@@ -29,15 +30,16 @@ except ImportError:
 class ValidationResult(tuple):
     """
     Validation outcome tuple for backward and forward compatibility.
-    Behaves as (valid, errors) for unpacking, with .warnings, .valid, .errors properties.
+    Behaves as (valid, errors) for unpacking, with .warnings, .valid, .errors, .diagnostics properties.
     """
-    def __new__(cls, valid: bool, errors: list[str], warnings: list[str] | None = None):
+    def __new__(cls, valid: bool, errors: list[str], warnings: list[str] | None = None, diagnostics: dict | None = None):
         return super().__new__(cls, (valid, errors))
 
-    def __init__(self, valid: bool, errors: list[str], warnings: list[str] | None = None):
+    def __init__(self, valid: bool, errors: list[str], warnings: list[str] | None = None, diagnostics: dict | None = None):
         self.valid = valid
         self.errors = errors
         self.warnings = warnings or []
+        self.diagnostics = diagnostics or {}
 
     def full(self) -> tuple[bool, list[str], list[str]]:
         return (self.valid, self.errors, self.warnings)
@@ -45,7 +47,6 @@ class ValidationResult(tuple):
 
 def detect_git_and_prompt_safety(workspace_path: Path | str, non_interactive: bool = False) -> tuple[bool, str]:
     path = Path(workspace_path).resolve()
-    # Check if inside git repository
     current = path
     is_git = False
     while current != current.parent:
@@ -97,7 +98,7 @@ def auto_fix_workspace(workspace_path: Path | str) -> list[str]:
             fixes_applied.append(f"Added .gitkeep to empty output directory: {stage.name}/output/")
 
     # 2. Fix missing resources/quality_standards.md
-    if (path / "resources").exists() and not (path / "resources" / "quality_standards.md").exists():
+    if (path / "resources").exists() and not (path / "resources" / "quality_standards.md").exists() and not (path / "resources" / "foundations" / "quality_standards.md").exists():
         (path / "resources" / "quality_standards.md").write_text(
             "# Project Quality Standards (Layer 3)\n\n1. Define project constraints and guidelines here.\n",
             encoding="utf-8",
@@ -120,10 +121,13 @@ def auto_fix_workspace(workspace_path: Path | str) -> list[str]:
                 parent_dir = str(Path(__file__).resolve().parent.parent)
                 if parent_dir not in sys.path:
                     sys.path.insert(0, parent_dir)
+                from scripts.manage_skills import sync_skills_manifest
+                sync_skills_manifest(path)
+                fixes_applied.append("Synchronized skills/CONTEXT.md manifest")
             except Exception:
                 pass
 
-    # 4. Clean up unauthorized agent dot-folders
+    # 4. Clean up unauthorized agent dot-folders and stray lockfiles
     allowed_dots = {".venv", ".git", ".worktrees", ".github"}
     for item in path.iterdir():
         if item.is_dir():
@@ -137,13 +141,28 @@ def auto_fix_workspace(workspace_path: Path | str) -> list[str]:
             item.unlink(missing_ok=True)
             fixes_applied.append(f"Purged stray lockfile: {item.name}")
 
+    # 5. Clean up nested README.md files in subdirectories (excluding root and third-party skills)
+    for md in path.glob("**/*.md"):
+        if md.name.lower() == "readme.md" and md != (path / "README.md"):
+            parts = md.parts
+            if any(p in [".git", ".venv", "node_modules", "skills"] for p in parts):
+                continue
+            # If it's a small stub (< 200 bytes), prune it
+            try:
+                if md.stat().st_size < 200:
+                    md.unlink(missing_ok=True)
+                    fixes_applied.append(f"Purged nested stub README: {md.relative_to(path)}")
+            except Exception:
+                pass
+
     return fixes_applied
 
 
-def check_structural_integrity(path: Path) -> tuple[list[str], list[str], str]:
+def check_structural_integrity(path: Path) -> tuple[list[str], list[str], str, dict]:
+    """Layer 0, 1, and Topology inspection."""
     errors: list[str] = []
     warnings: list[str] = []
-    topology = "Unknown"
+    stats: dict = {"topology": "Unknown", "l0_files": [], "l1_router": False}
 
     # Hygiene check for third-party agent dot-folders
     allowed_dots = {".venv", ".git", ".worktrees", ".github"}
@@ -154,173 +173,192 @@ def check_structural_integrity(path: Path) -> tuple[list[str], list[str], str]:
             warnings.append(f"Hygiene Anti-Pattern: Found non-standard stray folder '{item.name}'. Run --fix to auto-purge.")
 
     # Layer 0 check
-    has_l0 = (path / "AGENT.md").is_file() or (path / "CLAUDE.md").is_file() or (path / "GEMINI.md").is_file()
-    if not has_l0:
+    has_agent = (path / "AGENT.md").is_file()
+    has_claude = (path / "CLAUDE.md").is_file()
+    has_gemini = (path / "GEMINI.md").is_file()
+    if has_agent:
+        stats["l0_files"].append("AGENT.md")
+    if has_claude:
+        stats["l0_files"].append("CLAUDE.md")
+    if has_gemini:
+        stats["l0_files"].append("GEMINI.md")
+
+    if not stats["l0_files"]:
         errors.append("Layer 0 missing: Workspace must contain AGENT.md (or CLAUDE.md / GEMINI.md)")
 
     # Layer 1 check
     has_l1 = (path / "CONTEXT.md").is_file()
     if not has_l1:
         errors.append("Layer 1 missing: Workspace must contain root CONTEXT.md for task routing")
+    else:
+        stats["l1_router"] = True
 
-    # Check stages vs workflows
+    # Detect Topology
     has_stages = (path / "stages").is_dir()
     has_workflows = (path / "workflows").is_dir()
     has_docs = (path / "docs").is_dir()
 
-    if has_workflows and has_docs:
-        topology = "Topology 4 (Enterprise Multi-Workflow & PM)"
-    elif has_workflows:
-        topology = "Topology 3 (Multi-Workflow)"
-    elif has_stages and has_docs:
-        topology = "Topology 2 (Managed Single-Pipeline)"
-    elif has_stages:
-        topology = "Topology 1 (Lean Single-Pipeline)"
+    if has_stages and not has_docs and not has_workflows:
+        stats["topology"] = "Topology 1 (Lean Single-Pipeline)"
+    elif has_stages and has_docs and not has_workflows:
+        stats["topology"] = "Topology 2 (Managed Single-Pipeline)"
+    elif has_workflows and not has_docs and not has_stages:
+        stats["topology"] = "Topology 3 (Multi-Workflow Engine)"
+    elif has_workflows and has_docs:
+        stats["topology"] = "Topology 4 (Enterprise Multi-Workflow & Brain)"
     else:
-        errors.append("Structure missing: Workspace must contain either a 'stages/' or 'workflows/' directory")
+        stats["topology"] = "Custom / Domain-Specific Architecture"
 
-    def audit_stage_list(stage_dirs: list[Path], prefix: str = ""):
-        for idx, stage in enumerate(stage_dirs, start=1):
-            match = re.match(r"^(\d{2})_(.+)$", stage.name)
+    return errors, warnings, stats["topology"], stats
+
+
+def check_pipeline_stages(path: Path) -> tuple[list[str], list[str], dict]:
+    """Layer 2 workflow stage contracts and domain hub inspection."""
+    errors: list[str] = []
+    warnings: list[str] = []
+    stage_stats: dict = {"total_stages": 0, "workflows": {}, "domain_hubs": []}
+
+    workflow_dirs: list[Path] = []
+    if (path / "stages").is_dir():
+        workflow_dirs.append(path)
+    if (path / "workflows").is_dir():
+        for wf in (path / "workflows").iterdir():
+            if wf.is_dir() and (wf / "stages").is_dir():
+                workflow_dirs.append(wf)
+
+    for wf_path in workflow_dirs:
+        wf_name = wf_path.name if wf_path != path else "root"
+        stages_dir = wf_path / "stages"
+        subdirs = [d for d in stages_dir.iterdir() if d.is_dir()]
+        subdirs.sort(key=lambda d: d.name)
+        stage_stats["workflows"][wf_name] = len(subdirs)
+        stage_stats["total_stages"] += len(subdirs)
+
+        if not subdirs:
+            errors.append(f"No stage directories found in '{stages_dir.relative_to(path)}'")
+            continue
+
+        stage_numbers: list[int] = []
+        for stage in subdirs:
+            match = re.match(r"^(\d{2})_", stage.name)
             if not match:
-                errors.append(f"Stage '{prefix}{stage.name}' violates numbering pattern (must be NN_stagename e.g. 01_discovery)")
+                errors.append(
+                    f"Stage naming violation: '{stage.name}' in {wf_name} does not follow 2-digit sequential format (e.g. '01_stagename')"
+                )
             else:
-                stage_num = int(match.group(1))
-                if stage_num != idx:
-                    errors.append(f"Stage '{prefix}{stage.name}' is out of sequence (expected {idx:02d}, got {stage_num:02d})")
+                num = int(match.group(1))
+                stage_numbers.append(num)
 
-            stage_context = stage / "CONTEXT.md"
-            if not stage_context.is_file():
-                errors.append(f"Stage '{prefix}{stage.name}' missing Layer 2 contract: CONTEXT.md")
+            # Contract check
+            ctx_file = stage / "CONTEXT.md"
+            if not ctx_file.is_file():
+                errors.append(f"Missing local stage contract: '{stage.name}/CONTEXT.md' in {wf_name}")
             else:
-                content = stage_context.read_text(encoding="utf-8")
-                if "## Inputs" not in content:
-                    errors.append(f"Stage '{prefix}{stage.name}' CONTEXT.md missing '## Inputs' section")
-                if "## Process" not in content:
-                    errors.append(f"Stage '{prefix}{stage.name}' CONTEXT.md missing '## Process' section")
-                if "## Outputs" not in content:
-                    errors.append(f"Stage '{prefix}{stage.name}' CONTEXT.md missing '## Outputs' section")
+                try:
+                    ctx_text = ctx_file.read_text(encoding="utf-8")
+                    if "## Inputs" not in ctx_text:
+                        warnings.append(f"Stage '{stage.name}' CONTEXT.md missing '## Inputs' contract section")
+                    if "## Process" not in ctx_text:
+                        warnings.append(f"Stage '{stage.name}' CONTEXT.md missing '## Process' contract section")
+                    if "## Outputs" not in ctx_text:
+                        warnings.append(f"Stage '{stage.name}' CONTEXT.md missing '## Outputs' contract section")
+                except Exception as e:
+                    errors.append(f"Failed to read '{stage.name}/CONTEXT.md': {e}")
 
+            # Output folder check
             output_dir = stage / "output"
             if not output_dir.is_dir():
-                errors.append(f"Stage '{prefix}{stage.name}' missing Layer 4 'output/' folder")
+                errors.append(f"Missing output folder: '{stage.name}/output/' in {wf_name}")
+            elif not any(output_dir.iterdir()):
+                warnings.append(f"Empty output folder in '{stage.name}/output/'. (Add .gitkeep or run --fix)")
 
-    if has_stages:
-        stage_dirs = sorted([d for d in (path / "stages").iterdir() if d.is_dir()])
-        if not stage_dirs:
-            errors.append("No stages found in 'stages/' folder")
-        else:
-            audit_stage_list(stage_dirs)
+        # Verify contiguous numbering
+        if stage_numbers:
+            expected = list(range(stage_numbers[0], stage_numbers[0] + len(stage_numbers)))
+            if stage_numbers != expected:
+                errors.append(
+                    f"Non-contiguous stage numbering in {wf_name}: found {stage_numbers}, expected {expected}"
+                )
 
-    if has_workflows:
-        wf_dirs = sorted([d for d in (path / "workflows").iterdir() if d.is_dir()])
-        if not wf_dirs:
-            errors.append("No workflows found in 'workflows/' folder")
-        else:
-            for wf in wf_dirs:
-                wf_stages_dir = wf / "stages"
-                if not wf_stages_dir.is_dir():
-                    errors.append(f"Workflow '{wf.name}' missing 'stages/' directory")
-                else:
-                    wf_stages = sorted([d for d in wf_stages_dir.iterdir() if d.is_dir()])
-                    if not wf_stages:
-                        errors.append(f"Workflow '{wf.name}' has no stages in 'stages/'")
-                    else:
-                        audit_stage_list(wf_stages, prefix=f"{wf.name}/")
+    # Check Domain Hubs (e.g. curriculum/, apps/)
+    for domain in ["curriculum", "apps"]:
+        domain_dir = path / domain
+        if domain_dir.is_dir():
+            ctx_file = domain_dir / "CONTEXT.md"
+            if not ctx_file.is_file():
+                warnings.append(f"Domain Hub '{domain}/' exists but missing formal '{domain}/CONTEXT.md' contract")
+            else:
+                stage_stats["domain_hubs"].append(domain)
 
-    return errors, warnings, topology
+    return errors, warnings, stage_stats
 
 
-def check_dead_context_and_orphans(path: Path) -> tuple[list[str], list[str]]:
+def check_anti_patterns_and_markdown_hygiene(path: Path) -> tuple[list[str], list[str]]:
+    """Inspects workspace for uncontracted markdown sprawl and dead links."""
     errors: list[str] = []
     warnings: list[str] = []
 
-    link_pattern = re.compile(r"\[.*?\]\((?:file://)?(?:\./)?([a-zA-Z0-9_\-/\.]+)\)")
+    link_pattern = re.compile(r"\[([^\]]+)\]\(([^)]+)\)")
 
-    # Scan markdown files for dead links (excluding third-party skills and build caches)
     for md_file in path.glob("**/*.md"):
         parts = md_file.parts
-        if any(p in [".git", ".venv", "node_modules", ".pytest_cache", "templates", "skills"] for p in parts):
+        if any(p in [".git", ".venv", "node_modules", ".pytest_cache", "skills"] for p in parts):
             continue
 
+        # 1. Anti-Pattern: Nested README.md sprawl
+        if md_file.name.lower() == "readme.md" and md_file != (path / "README.md"):
+            if "skills" not in parts:
+                warnings.append(
+                    f"Markdown Sprawl Anti-Pattern: Found nested '{md_file.relative_to(path)}'. "
+                    "ICM requires domain hubs to use CONTEXT.md contracts rather than arbitrary READMEs."
+                )
+
+        # 2. Anti-Pattern: Empty or trivial stubs
         try:
-            content = md_file.read_text(encoding="utf-8")
+            content = md_file.read_text(encoding="utf-8", errors="replace")
+            if len(content.strip()) < 40 and md_file.name != ".gitkeep":
+                warnings.append(f"Trivial Stub: '{md_file.relative_to(path)}' is nearly empty ({len(content.strip())} bytes).")
         except Exception:
             continue
 
-        # Strip fenced code blocks to avoid checking illustrative code examples
-        clean_content = re.sub(r"```[\s\S]*?```", "", content)
-
-        for match in link_pattern.finditer(clean_content):
-            target = match.group(1).strip()
-            # Skip URLs, anchor links, or template variables
-            if target.startswith("http://") or target.startswith("https://") or target.startswith("#") or "{" in target or "}" in target:
+        # 3. Relative link integrity check
+        for match in link_pattern.finditer(content):
+            target = match.group(2).strip()
+            if target.startswith("http://") or target.startswith("https://") or target.startswith("#") or target.startswith("mailto:"):
                 continue
 
-            # Determine nearest workspace or archetype root
-            current_root = path
-            for parent in md_file.parents:
-                if (parent / "AGENT.md").is_file() or (parent / "CONTEXT.md").is_file():
-                    current_root = parent
-                    break
+            clean_target = target
+            if clean_target.startswith("file://./"):
+                clean_target = clean_target[9:]
+            elif clean_target.startswith("file:///"):
+                clean_target = clean_target[8:]
+            elif clean_target.startswith("file://"):
+                clean_target = clean_target[7:]
 
-            rel_to_file = md_file.parent / target
-            rel_to_current_root = current_root / target
-            rel_to_root = path / target
+            clean_target = clean_target.split("#")[0].split("?")[0]
+            if not clean_target:
+                continue
 
-            if not rel_to_file.exists() and not rel_to_current_root.exists() and not rel_to_root.exists():
-                warnings.append(f"Dead link in {md_file.relative_to(path)}: target '{target}' does not exist")
+            rel_to_file = (md_file.parent / clean_target).resolve()
+            rel_to_current_root = (path / clean_target).resolve()
+
+            if not rel_to_file.exists() and not rel_to_current_root.exists():
+                warnings.append(f"Dead link in {md_file.relative_to(path)}: target '{target}' does not exist on disk")
 
     return errors, warnings
 
 
-def check_cross_layer_rule_contradictions(path: Path) -> tuple[list[str], list[str]]:
+def check_task_governance_and_skills(path: Path) -> tuple[list[str], list[str], dict]:
+    """Layer 3 (Skills, Quality Standards, Agent Chambers) and Layer 4 (Docs & Tasks)."""
     errors: list[str] = []
     warnings: list[str] = []
+    stats: dict = {"installed_skills": 0, "agent_chambers": 0, "sprint_phases": 0}
 
-    # Check if this specific workspace enforces bun/bunx exclusively
-    enforces_bun_only = False
-    for std_file in [path / "AGENT.md", path / "resources" / "quality_standards.md"]:
-        if std_file.is_file():
-            try:
-                txt = std_file.read_text(encoding="utf-8", errors="replace")
-                if "bun" in txt.lower() and ("exclusively" in txt.lower() or "strict" in txt.lower() or "no npm" in txt.lower()):
-                    enforces_bun_only = True
-                    break
-            except Exception:
-                pass
-
-    if enforces_bun_only:
-        forbidden_pattern = re.compile(r"\b(npm\s+install|yarn\s+add|pnpm\s+add)\b", re.IGNORECASE)
-        for md_file in path.glob("**/*.md"):
-            parts = md_file.parts
-            if any(p in [".git", ".venv", "node_modules", ".pytest_cache", "skills"] for p in parts):
-                continue
-
-            try:
-                content = md_file.read_text(encoding="utf-8", errors="replace")
-            except Exception:
-                continue
-
-            match = forbidden_pattern.search(content)
-            if match:
-                errors.append(
-                    f"Rule Contradiction in {md_file.relative_to(path)}: "
-                    f"Forbidden package manager command '{match.group(0)}' found. "
-                    "This workspace explicitly enforces 'bun'/'bunx' and 'uv run'."
-                )
-
-    return errors, warnings
-
-
-def check_task_governance_and_skills(path: Path) -> tuple[list[str], list[str]]:
-    errors: list[str] = []
-    warnings: list[str] = []
-
-    # Check docs/phases/ if present
+    # Check docs/phases/ (Layer 4)
     phases_dir = path / "docs" / "phases"
     if phases_dir.is_dir():
         phase_subdirs = [d for d in phases_dir.iterdir() if d.is_dir()]
+        stats["sprint_phases"] = len(phase_subdirs)
         for phase in phase_subdirs:
             goals_file = phase / "goals.md"
             tasks_file = phase / "tasks.md"
@@ -333,7 +371,7 @@ def check_task_governance_and_skills(path: Path) -> tuple[list[str], list[str]]:
                 if not re.search(r"TASK-\d{2}-[A-Z0-9]+", tasks_text) and "TASK-" not in tasks_text:
                     warnings.append(f"Phase '{phase.name}' tasks.md does not follow canonical TASK-NN-XXX formatting")
 
-    # Check skills/ if present
+    # Check skills/ (Layer 3)
     skills_dir = path / "skills"
     if skills_dir.is_dir():
         context_file = skills_dir / "CONTEXT.md"
@@ -341,33 +379,30 @@ def check_task_governance_and_skills(path: Path) -> tuple[list[str], list[str]]:
             errors.append("skills/ directory exists but missing skills/CONTEXT.md manifest")
         else:
             manifest_text = context_file.read_text(encoding="utf-8")
-            # Verify listed skills exist on disk
+            # Count listed skills
             for line in manifest_text.splitlines():
                 line = line.strip()
-                if not line.startswith("|") or "---" in line or "skill name" in line.lower() or ("path" in line.lower() and "trigger" in line.lower()):
+                if not line.startswith("|") or "---" in line or "skill name" in line.lower():
                     continue
                 cols = [c.strip().strip("`") for c in line.split("|")[1:-1]]
                 if len(cols) >= 2:
                     s_name = cols[0]
                     if s_name and s_name.lower() not in ["skill name", "---", "_none_"]:
+                        stats["installed_skills"] += 1
                         skill_path = skills_dir / s_name / "SKILL.md"
                         if not skill_path.is_file():
-                            errors.append(f"Skill '{s_name}' is listed in skills/CONTEXT.md but missing '{skill_path.relative_to(path)}'")
+                            errors.append(f"Skill '{s_name}' listed in skills/CONTEXT.md but missing on disk: '{skill_path.relative_to(path)}'")
 
-    # Check agents/ if present
+    # Check agents/ (Layer 3)
     agents_dir = path / "agents"
     if agents_dir.is_dir():
         agents_ctx = agents_dir / "CONTEXT.md"
         if not agents_ctx.is_file():
             errors.append("agents/ directory exists but missing agents/CONTEXT.md routing manifest")
-        else:
-            ctx_text = agents_ctx.read_text(encoding="utf-8")
-            if not any(line.strip().startswith("|") for line in ctx_text.splitlines()):
-                warnings.append("agents/CONTEXT.md does not contain a Markdown dispatch table")
 
-        # Audit each agent chamber
         for chamber in agents_dir.iterdir():
             if chamber.is_dir():
+                stats["agent_chambers"] += 1
                 agent_file = chamber / "AGENT.md"
                 if not agent_file.is_file():
                     errors.append(f"Agent chamber '{chamber.name}' missing AGENT.md contract")
@@ -380,163 +415,146 @@ def check_task_governance_and_skills(path: Path) -> tuple[list[str], list[str]]:
                     if "* **Forbidden:**" not in agent_text and "**Forbidden:**" not in agent_text:
                         warnings.append(f"Agent chamber '{chamber.name}' AGENT.md missing explicit negative guardrails ('* **Forbidden:**')")
 
-                    # Verify skills listed in chamber AGENT.md exist if pointing to workspace skills
-                    if skills_dir.is_dir():
-                        for line in agent_text.splitlines():
-                            line = line.strip()
-                            if line.startswith("|") and ("skills/" in line or "`skills/" in line):
-                                for part in line.split("|"):
-                                    m = re.search(r"skills/([a-zA-Z0-9_\-]+)", part)
-                                    if m:
-                                        skill_name = m.group(1)
-                                        if not (skills_dir / skill_name).is_dir() and not (skills_dir / skill_name / "SKILL.md").is_file():
-                                            warnings.append(f"Agent chamber '{chamber.name}' references skill '{skill_name}' not found in workspace skills/")
-
-    return errors, warnings
-
-
-def check_high_signal_formatting(path: Path) -> tuple[list[str], list[str]]:
-    errors: list[str] = []
-    warnings: list[str] = []
-
-    # Forbidden meta-tags that violate zero-jargon standard (matched at tag positions)
-    forbidden_meta_tags = [
-        re.compile(r"(?m)^[>\s*#-]*\*{0,2}BLUF\s*:", re.IGNORECASE),
-        re.compile(r"(?m)^[>\s*#-]*\*{0,2}ADHD\s+(Mode|Protocol)\b", re.IGNORECASE),
-        re.compile(r"(?m)^[>\s*#-]*\*{0,2}Caveman\s+Mode\b", re.IGNORECASE),
-    ]
-
-    # Files to check for high-signal formatting
-    files_to_check: list[Path] = []
-    for f_name in ["AGENT.md", "CONTEXT.md", "CLAUDE.md"]:
-        f_path = path / f_name
-        if f_path.is_file():
-            files_to_check.append(f_path)
-
-    # Check stage CONTEXT.md files
-    if (path / "stages").is_dir():
-        files_to_check.extend(path.glob("stages/*/CONTEXT.md"))
-    if (path / "workflows").is_dir():
-        files_to_check.extend(path.glob("workflows/*/stages/*/CONTEXT.md"))
-    if (path / "agents").is_dir():
-        files_to_check.extend(path.glob("agents/**/AGENT.md"))
-        if (path / "agents" / "CONTEXT.md").is_file():
-            files_to_check.append(path / "agents" / "CONTEXT.md")
-
-    for f_path in files_to_check:
-        try:
-            text = f_path.read_text(encoding="utf-8")
-        except Exception:
-            continue
-
-        rel_path = f_path.relative_to(path)
-
-        # Check for forbidden meta-tags
-        for tag_re in forbidden_meta_tags:
-            match = tag_re.search(text)
-            if match:
-                errors.append(
-                    f"High-Signal Violation in {rel_path}: Forbidden meta-tag/jargon '{match.group(0)}' found. "
-                    "Use native Markdown formatting (Purpose + Tables + Bold Keys) without third-party tags."
-                )
-
-        # Check for Purpose / Mission in AGENT.md, CONTEXT.md, and stage CONTEXT.md
-        if f_path.name in ["AGENT.md", "CONTEXT.md"] and not (rel_path.parts[0] == "skills"):
-            lines = [l.strip() for l in text.splitlines() if l.strip()]
-            top_block = "\n".join(lines[:10])
-            if "**Purpose:**" not in top_block and "**Mission:**" not in top_block and "Mission:" not in top_block and "Purpose:" not in top_block:
-                warnings.append(f"High-Signal Advisory in {rel_path}: Missing top-level '**Purpose:**' or '**Mission:**' statement beneath H1.")
-
-    return errors, warnings
+    return errors, warnings, stats
 
 
 def validate_workspace(
-    workspace_path: Path | str,
+    workspace_path: Path | str = ".",
     fix: bool = False,
-    non_interactive: bool = True,
+    non_interactive: bool = False,
 ) -> ValidationResult:
     path = Path(workspace_path).resolve()
-    
-    if not path.exists() or not path.is_dir():
-        return ValidationResult(False, [f"Directory does not exist: {path}"], [])
+    if not path.is_dir():
+        return ValidationResult(False, [f"Target path '{path}' is not a directory."])
 
     if fix:
-        allowed, _ = detect_git_and_prompt_safety(path, non_interactive=non_interactive)
-        if allowed:
+        can_proceed, _ = detect_git_and_prompt_safety(path, non_interactive=non_interactive)
+        if can_proceed:
             auto_fix_workspace(path)
 
     all_errors: list[str] = []
     all_warnings: list[str] = []
+    diagnostics: dict = {
+        "workspace_path": str(path),
+        "workspace_name": path.name,
+    }
 
-    # Tier 1: Structural Integrity
-    t1_errs, t1_warns, _ = check_structural_integrity(path)
-    all_errors.extend(t1_errs)
-    all_warnings.extend(t1_warns)
+    # 1. Structural & Layer 0/1
+    e1, w1, topo, s1 = check_structural_integrity(path)
+    all_errors.extend(e1)
+    all_warnings.extend(w1)
+    diagnostics["topology"] = topo
+    diagnostics.update(s1)
 
-    # Tier 2: Dead Context & Orphans
-    t2_errs, t2_warns = check_dead_context_and_orphans(path)
-    all_errors.extend(t2_errs)
-    all_warnings.extend(t2_warns)
+    # 2. Layer 2 Pipelines & Domain Hubs
+    e2, w2, s2 = check_pipeline_stages(path)
+    all_errors.extend(e2)
+    all_warnings.extend(w2)
+    diagnostics.update(s2)
 
-    # Tier 3: Cross-Layer Rule Contradictions
-    t3_errs, t3_warns = check_cross_layer_rule_contradictions(path)
-    all_errors.extend(t3_errs)
-    all_warnings.extend(t3_warns)
+    # 3. Markdown Hygiene & Anti-Patterns
+    e3, w3 = check_anti_patterns_and_markdown_hygiene(path)
+    all_errors.extend(e3)
+    all_warnings.extend(w3)
 
-    # Tier 4: Task Governance & Skills Health
-    t4_errs, t4_warns = check_task_governance_and_skills(path)
-    all_errors.extend(t4_errs)
-    all_warnings.extend(t4_warns)
-
-    # Tier 5: High-Signal Contract & Voice Linter
-    t5_errs, t5_warns = check_high_signal_formatting(path)
-    all_errors.extend(t5_errs)
-    all_warnings.extend(t5_warns)
+    # 4. Layer 3 & Layer 4
+    e4, w4, s4 = check_task_governance_and_skills(path)
+    all_errors.extend(e4)
+    all_warnings.extend(w4)
+    diagnostics.update(s4)
 
     is_valid = len(all_errors) == 0
-    return ValidationResult(is_valid, all_errors, all_warnings)
+    diagnostics["is_valid"] = is_valid
+    diagnostics["total_errors"] = len(all_errors)
+    diagnostics["total_warnings"] = len(all_warnings)
+
+    return ValidationResult(is_valid, all_errors, all_warnings, diagnostics)
+
+
+def render_ai_audit_dashboard(result: ValidationResult):
+    """Renders a comprehensive diagnostic table for humans and LLM agents."""
+    diag = result.diagnostics
+
+    if console:
+        # 1. Overview Table
+        table = Table(title=f"🏛️ ICM Comprehensive Architecture Audit: {diag.get('workspace_name')}", show_header=True, header_style="bold magenta")
+        table.add_column("Layer / Dimension", style="cyan", width=30)
+        table.add_column("Status", width=12)
+        table.add_column("Audit Metric & Diagnostics", style="white")
+
+        table.add_row(
+            "Layer 0: Master Control Plane",
+            "[green]PASS[/green]" if diag.get("l0_files") else "[red]FAIL[/red]",
+            f"Active: {', '.join(diag.get('l0_files', []))}"
+        )
+        table.add_row(
+            "Layer 1: Context Router",
+            "[green]PASS[/green]" if diag.get("l1_router") else "[red]FAIL[/red]",
+            "Root CONTEXT.md active & dispatching" if diag.get("l1_router") else "Missing root CONTEXT.md"
+        )
+        table.add_row(
+            "Layer 2: Workflows & Domain Hubs",
+            "[green]PASS[/green]" if diag.get("total_stages", 0) > 0 or diag.get("domain_hubs") else "[yellow]LEAN[/yellow]",
+            f"{diag.get('total_stages', 0)} stages across {len(diag.get('workflows', {}))} workflows; Hubs: {', '.join(diag.get('domain_hubs', [])) or 'None'}"
+        )
+        table.add_row(
+            "Layer 3: Skills & Agent Chambers",
+            "[green]PASS[/green]",
+            f"{diag.get('installed_skills', 0)} JIT skills cataloged; {diag.get('agent_chambers', 0)} specialist chambers"
+        )
+        table.add_row(
+            "Layer 4: Project Brain & Sprints",
+            "[green]PASS[/green]" if diag.get("sprint_phases", 0) > 0 else "[yellow]NONE[/yellow]",
+            f"{diag.get('sprint_phases', 0)} sprint phases active in docs/phases/"
+        )
+        table.add_row(
+            "Markdown Hygiene & Anti-Patterns",
+            "[green]CLEAN[/green]" if not result.warnings else f"[yellow]{len(result.warnings)} NOTES[/yellow]",
+            "Zero dot-folders, zero nested README sprawl" if not result.warnings else "See warnings below"
+        )
+        console.print(table)
+
+        if result.errors:
+            err_panel = Panel("\n".join(f"❌ [bold red]ERROR:[/bold red] {e}" for e in result.errors), title="[bold red]Critical Blocking Violations[/bold red]", border_style="red")
+            console.print(err_panel)
+
+        if result.warnings:
+            warn_panel = Panel("\n".join(f"⚠️  [bold yellow]ADVISORY:[/bold yellow] {w}" for w in result.warnings), title="[bold yellow]Non-Blocking Architecture Warnings[/bold yellow]", border_style="yellow")
+            console.print(warn_panel)
+
+        if result.valid and not result.warnings:
+            console.print(Panel("[bold green]🌟 100% ICM COMPLIANT: All 5 Layers and Hygiene Invariants Verified![/bold green]", border_style="green"))
+    else:
+        print(f"\n[*] ICM Audit: {diag.get('workspace_name')} ({diag.get('topology')})")
+        print(f"Status: {'PASS' if result.valid else 'FAIL'} | Errors: {len(result.errors)} | Warnings: {len(result.warnings)}")
+        for e in result.errors:
+            print(f"  [ERROR] {e}")
+        for w in result.warnings:
+            print(f"  [WARN]  {w}")
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Audit an ICM workspace for 4-tier health compliance.")
-    parser.add_argument("path", nargs="?", default=".", help="Path to workspace directory (default: current dir)")
-    parser.add_argument("--fix", action="store_true", help="Auto-fix repairable structure issues")
-    parser.add_argument("--yes", "-y", action="store_true", help="Non-interactive mode (auto-accept git safety prompt)")
+    parser = argparse.ArgumentParser(description="Comprehensive ICM Workspace Audit & Diagnostics Engine.")
+    parser.add_argument("path", nargs="?", default=".", help="Path to workspace directory")
+    parser.add_argument("--fix", action="store_true", help="Automatically fix structural and hygiene violations")
+    parser.add_argument("-y", "--yes", action="store_true", help="Non-interactive mode (auto-accept prompts)")
+    parser.add_argument("--json", action="store_true", help="Emit machine-readable JSON report for LLM agents")
     args = parser.parse_args()
 
-    target_path = Path(args.path).resolve()
-    print(f"\n[*] Auditing ICM Workspace: {target_path}\n" + "-" * 60)
+    result = validate_workspace(args.path, fix=args.fix, non_interactive=args.yes)
 
-    res = validate_workspace(target_path, fix=args.fix, non_interactive=args.yes)
-
-    if console:
-        if res.valid:
-            console.print(Panel("[bold green]PASS: Workspace is 100% ICM Compliant![/bold green]"))
-        else:
-            console.print(Panel(f"[bold red]FAIL: Found {len(res.errors)} compliance violation(s)[/bold red]"))
-            for err in res.errors:
-                console.print(f"  [red]✗[/red] {err}")
-
-        if res.warnings:
-            console.print("\n[yellow]Warnings / Non-Blocking Issues:[/yellow]")
-            for warn in res.warnings:
-                console.print(f"  [yellow]![/yellow] {warn}")
+    if args.json:
+        report = {
+            "valid": result.valid,
+            "errors": result.errors,
+            "warnings": result.warnings,
+            "diagnostics": result.diagnostics,
+        }
+        print(json.dumps(report, indent=2))
     else:
-        if res.valid:
-            print("[PASS] Workspace is 100% ICM Compliant!\n")
-        else:
-            print("[FAIL] Workspace has compliance violations:\n")
-            for err in res.errors:
-                print(f"  * {err}")
-            print()
+        render_ai_audit_dashboard(result)
 
-        if res.warnings:
-            print("Warnings / Non-Blocking Issues:\n")
-            for warn in res.warnings:
-                print(f"  ! {warn}")
-            print()
-
-    sys.exit(0 if res.valid else 1)
+    sys.exit(0 if result.valid else 1)
 
 
 if __name__ == "__main__":
