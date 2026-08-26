@@ -2,7 +2,7 @@
 name = "icm-factory"
 version = "0.5.0"
 description = "ICM Factory — Master Control Plane & Workspace Builder for Interpretable Context Methodology"
-readme = "AGENT.md"
+readme = "AGENTS.md"
 requires-python = ">=3.11"
 dependencies = [
     "rich>=15.0.0",
@@ -12,3 +12,7 @@ dependencies = [
 dev = [
     "pytest>=8.0.0",
 ]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+

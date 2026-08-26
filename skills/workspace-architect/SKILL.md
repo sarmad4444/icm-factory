@@ -149,3 +149,18 @@ When the user asks to evaluate or install an external tool (e.g. *"Should we ins
      - *What to use:* Key heuristics, schemas, or tables provided by the skill.
      - *What to filter:* Incompatible framework advice (e.g. ignore React advice in Svelte projects).
      - *How to trigger:* The exact trigger phrase registered in `skills/CONTEXT.md`.
+
+---
+
+## Mode 6: Universal Response Telemetry Configuration
+
+When scaffolding a new workspace or re-configuring an existing workspace's Layer 0 contract:
+1. Provide the user with the choice of **5 Pluggable Telemetry Styles**:
+   - `pill-bar`: Minimalist Unicode pill bar (Option 5).
+   - `terminal-box`: Cyberpunk ASCII wireframe box (Option 1).
+   - `cockpit-hud`: IDE blockquote alert callout (Option 2).
+   - `monospace-grid`: 3-line clean monospace backtick grid (Option 3).
+   - `micro-table`: 3-column markdown table (Option 4).
+   - `none`: Standard prompt without mandatory response header.
+2. The selected telemetry style is injected into `AGENTS.md` Section 1: *Mandatory Response Telemetry Protocol*.
+3. All AI assistants must dynamically re-evaluate telemetry values turn-by-turn. Copying stale values is strictly forbidden.

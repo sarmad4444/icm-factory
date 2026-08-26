@@ -112,7 +112,7 @@ ICM workspaces use a strict 5-layer hierarchy to guarantee that AI models always
 
 ```
 workspaces/[my-project]/
-├── AGENT.md                      # Layer 0: Master Identity & Operating Guide
+├── AGENTS.md                     # Layer 0: Master Identity & Operating Guide
 ├── CONTEXT.md                    # Layer 1: Master Intent Router & Task Dispatcher
 ├── stages/                       # Layer 2: Sequential Stage Contracts
 │   ├── 01_spec/CONTEXT.md
@@ -124,7 +124,7 @@ workspaces/[my-project]/
 
 | Layer | File / Location | Purpose & Responsibility |
 | :--- | :--- | :--- |
-| **Layer 0** | [`AGENT.md`](file://./AGENT.md) | **Identity & Rules:** Who the agent is, its mission, core constraints, and floor plan. |
+| **Layer 0** | [`AGENTS.md`](file://./AGENTS.md) | **Identity & Rules:** Who the agent is, its mission, core constraints, and floor plan. |
 | **Layer 1** | [`CONTEXT.md`](file://./CONTEXT.md) | **Task Router:** Master dispatch matrix mapping user intents to specific directories. |
 | **Layer 2** | `stages/NN_*/CONTEXT.md` | **Stage Contracts:** Bounded task execution defining `## Inputs`, `## Process`, and `## Outputs`. |
 | **Layer 3** | `resources/` or `skills/` | **Knowledge & Tools:** Static styling guidelines, quality standards, and dynamic skills. |
@@ -259,7 +259,7 @@ uv run python scripts/dashboard.py
 ICM Factory works out-of-the-box with **Google Antigravity**, **Claude Code**, **OpenCode**, **Cursor**, **Codex**, and any markdown-capable agent.
 
 1. **Step 1 — Point the Agent:** Open your LLM terminal in the project root.
-2. **Step 2 — Read Entry Contract:** The AI reads [`AGENT.md`](file://./AGENT.md) for its identity and [`CONTEXT.md`](file://./CONTEXT.md) for task routing.
+2. **Step 2 — Read Entry Contract:** The AI reads [`AGENTS.md`](file://./AGENTS.md) for its identity and [`CONTEXT.md`](file://./CONTEXT.md) for task routing.
 3. **Step 3 — Execute by Intent:** Ask the AI natural-language commands:
    - *"Scaffold a new managed workspace called `order-service` with multi-agent chambers."*
    - *"Audit `workspaces/saas-backend/` against the 5-tier ICM quality standard."*
@@ -285,9 +285,10 @@ ICM Factory works out-of-the-box with **Google Antigravity**, **Claude Code**, *
 
 ```
 icm-factory/
-├── AGENT.md                      # Layer 0: ICM Factory Master Identity & Operating Guide
+├── AGENTS.md                     # Layer 0: ICM Factory Master Identity & Operating Guide
 ├── CONTEXT.md                    # Layer 1: Master Intent Router & Task Dispatcher
 ├── CLAUDE.md                     # Universal Claude & LLM Entry Pointer
+├── GEMINI.md                     # Google Antigravity Entry Pointer
 ├── pyproject.toml                # Project configuration, dependencies, and metadata (v0.5.0)
 ├── scripts/                      # Control plane automation and CLI tools
 │   ├── create_workspace.py       # Workspace scaffolding & legacy code adoption engine

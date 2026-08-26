@@ -269,6 +269,7 @@ def install_skill_multi_channel(
     commit: str | None = None,
     trigger: str | None = None,
     description: str | None = None,
+    url: str | None = None,
 ) -> bool:
     """Multi-channel skill installer: bunx -> npx -> git shallow clone -> local copy."""
     ws = Path(workspace_dir).resolve()
@@ -279,44 +280,33 @@ def install_skill_multi_channel(
     target_dir = skills_dir / skill_name
 
     installed = False
+    is_git_url = "http://" in source or "https://" in source or "git@" in source or source.endswith(".git")
 
-    # Channel A: Try bunx skills add
-    try:
-        subprocess.run(
-            ["bunx", "skills", "add", source, "-y", "--copy", "--all"],
-            cwd=str(ws),
-            capture_output=True,
-            text=True,
-            encoding="utf-8",
-            errors="replace",
-            shell=True,
-            timeout=15,
-        )
-        dot_skills = ws / ".skills"
-        if dot_skills.is_dir():
-            for item in dot_skills.iterdir():
-                if item.is_dir():
-                    dest = skills_dir / item.name
-                    if not dest.exists():
-                        shutil.copytree(item, dest)
-            installed = (target_dir / "SKILL.md").is_file() or any(
-                (skills_dir / d / "SKILL.md").is_file() for d in skills_dir.iterdir() if d.is_dir()
-            )
-    except Exception:
-        pass
+    # Priority Channel for Git URLs: Shallow clone
+    if is_git_url:
+        try:
+            if target_dir.exists():
+                shutil.rmtree(target_dir)
+            cmd = ["git", "clone", "--depth", "1", source, str(target_dir)]
+            if commit:
+                cmd.extend(["--branch", commit])
+            subprocess.run(cmd, capture_output=True, text=True, shell=True, timeout=8)
+            installed = target_dir.is_dir() and (target_dir / "SKILL.md").is_file()
+        except Exception:
+            pass
 
-    # Channel B: Try npx skills add if Channel A didn't complete
-    if not installed and not (target_dir / "SKILL.md").is_file():
+    # Channel A: Try bunx skills add (for package names or registry packages)
+    if not installed and not (target_dir / "SKILL.md").is_file() and not is_git_url:
         try:
             subprocess.run(
-                ["npx", "skills", "add", source, "-y", "--copy", "--all"],
+                ["bunx", "skills", "add", source, "-y", "--copy", "--all"],
                 cwd=str(ws),
                 capture_output=True,
                 text=True,
                 encoding="utf-8",
                 errors="replace",
                 shell=True,
-                timeout=15,
+                timeout=5,
             )
             dot_skills = ws / ".skills"
             if dot_skills.is_dir():
@@ -329,16 +319,27 @@ def install_skill_multi_channel(
         except Exception:
             pass
 
-    # Channel C: Git shallow clone if URL is provided
-    if not installed and not (target_dir / "SKILL.md").is_file() and ("http://" in source or "https://" in source or "git@" in source):
+    # Channel B: Try npx skills add if Channel A didn't complete
+    if not installed and not (target_dir / "SKILL.md").is_file() and not is_git_url:
         try:
-            if target_dir.exists():
-                shutil.rmtree(target_dir)
-            cmd = ["git", "clone", "--depth", "1", source, str(target_dir)]
-            if commit:
-                cmd.extend(["--branch", commit])
-            subprocess.run(cmd, capture_output=True, text=True, shell=True, timeout=20)
-            installed = target_dir.is_dir()
+            subprocess.run(
+                ["npx", "skills", "add", source, "-y", "--copy", "--all"],
+                cwd=str(ws),
+                capture_output=True,
+                text=True,
+                encoding="utf-8",
+                errors="replace",
+                shell=True,
+                timeout=5,
+            )
+            dot_skills = ws / ".skills"
+            if dot_skills.is_dir():
+                for item in dot_skills.iterdir():
+                    if item.is_dir():
+                        dest = skills_dir / item.name
+                        if not dest.exists():
+                            shutil.copytree(item, dest)
+                installed = (target_dir / "SKILL.md").is_file()
         except Exception:
             pass
 
@@ -347,17 +348,18 @@ def install_skill_multi_channel(
         target_dir.mkdir(parents=True, exist_ok=True)
 
     skill_file = target_dir / "SKILL.md"
+    effective_url = url or (source if "http" in source else f"https://github.com/obra/{skill_name}")
+
     if not skill_file.is_file():
         skill_desc = description or f"Specialized instructions for {skill_name}"
         skill_trigger = trigger or f"use {skill_name}"
-        skill_url = source if ("http" in source) else f"https://github.com/obra/{skill_name}"
         skill_version = commit or "v1.0.0"
 
         content = f"""---
 name: {skill_name}
 description: {skill_desc}
 trigger: {skill_trigger}
-url: {skill_url}
+url: {effective_url}
 version: {skill_version}
 ---
 
@@ -370,12 +372,46 @@ version: {skill_version}
 1. Follow instructions when activated via trigger: `{skill_trigger}`.
 """
         skill_file.write_text(content, encoding="utf-8")
+    else:
+        # If SKILL.md already exists, ensure explicitly provided url/commit are reflected
+        if url or commit:
+            try:
+                curr_txt = skill_file.read_text(encoding="utf-8")
+                if url and "url:" in curr_txt:
+                    curr_txt = re.sub(r"url:\s*.*", f"url: {url}", curr_txt)
+                if commit and "version:" in curr_txt:
+                    curr_txt = re.sub(r"version:\s*.*", f"version: {commit}", curr_txt)
+                skill_file.write_text(curr_txt, encoding="utf-8")
+            except Exception:
+                pass
 
     # Clean up third-party agent dot-folders automatically
     cleanup_workspace_hygiene(ws)
 
     sync_skills_manifest(ws)
     return True
+
+
+def add_skill(
+    source: str | None = None,
+    workspace_dir: Path | str = ".",
+    name: str | None = None,
+    commit: str | None = None,
+    trigger: str | None = None,
+    description: str | None = None,
+    url: str | None = None,
+) -> bool:
+    """Backward-compatible alias for install_skill_multi_channel."""
+    src = source or url or name or ""
+    return install_skill_multi_channel(
+        source=src,
+        workspace_dir=workspace_dir,
+        name=name,
+        commit=commit,
+        trigger=trigger,
+        description=description,
+        url=url,
+    )
 
 
 def update_skill(name: str, workspace_dir: Path | str = ".") -> bool:

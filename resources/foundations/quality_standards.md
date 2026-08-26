@@ -20,7 +20,7 @@
 
 | Layer | Path Pattern | Responsibility |
 | :--- | :--- | :--- |
-| **Layer 0** | `AGENT.md` (or `CLAUDE.md` / `GEMINI.md`) | Master workspace identity, operating constraints, and topologies |
+| **Layer 0** | `AGENTS.md` (root standard) / `AGENT.md` (chambers & legacy) | Master workspace identity, operating constraints, and topologies |
 | **Layer 1** | `CONTEXT.md` (root) | Master intent router and task dispatcher |
 | **Layer 2** | `stages/NN_<stagename>/CONTEXT.md` | Local stage contracts defining `## Inputs`, `## Process`, and `## Outputs` |
 | **Layer 3** | `resources/` or `skills/` | Static constraints, conventions, quality standards, and dynamic JIT tools |
@@ -68,3 +68,28 @@
 | **Scoped Skill Envelope** | Agents mount only authorized dynamic skills from `skills/` | Verified against `skills/` directory on disk |
 | **Explicit Guardrails** | Every agent declares negative boundary constraints | Must contain `* **Forbidden:**` anchors |
 | **Plain-Text Handoffs** | Inter-agent requests written to disk in Markdown | Output to `docs/phases/*/handoffs/` |
+
+---
+
+## 7. Universal Response Telemetry Standards (Layer 0 Invariant)
+
+When configured in `AGENTS.md`, AI assistants must dynamically prepend an execution telemetry header to **every single response**.
+
+| Telemetry Dimension | Measurement Description | Evaluation Criteria |
+| :--- | :--- | :--- |
+| **Active Persona / Chamber** | `@Chamber` persona governing the turn | Declared in `agents/` or `@Generalist` |
+| **Mounted JIT Skills** | Skills loaded for this specific turn | Verified against `skills/` or `none` |
+| **Grounding / Evidence** | Provenance of statements or code | `Verified (Tests Pass)`, `Grounded (Disk Read)`, `Design (Planning)` |
+| **Calibrated Confidence %** | Self-assessed epistemic certainty | Explicit percentage ($<90\%$ triggers user caution) |
+| **Context Window Budget** | Active context window fill | Estimated `~X.Xk / 200k (X.X%)` |
+| **Turn Token Economy** | Tokens generated during this turn | Estimated `~XXX` output tokens |
+| **ICM Stage & Task** | Active stage contract and sprint task | e.g. `workflow/stage` and `Phase-NN/TASK-NN-XXX` |
+| **Utilized References** | Specific Layer 3 files consulted | Explicit filenames from `resources/` or `references/` |
+
+### Supported Styles:
+1. `pill-bar`: Minimalist Unicode pill bar (Option 5).
+2. `terminal-box`: Cyberpunk ASCII wireframe box (Option 1 / Style 3).
+3. `cockpit-hud`: IDE blockquote alert callout (Option 2).
+4. `monospace-grid`: 3-line clean monospace backtick grid (Option 3).
+5. `micro-table`: 3-column markdown table (Option 4).
+

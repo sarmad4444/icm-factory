@@ -1,4 +1,4 @@
-# Claude Code Operating Guide
+# Google Antigravity Operating Guide
 
 **Purpose:** Master control plane and workspace factory.  
 **Framework:** Interpretable Context Methodology (ICM)
