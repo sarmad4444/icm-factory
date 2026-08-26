@@ -173,10 +173,13 @@ def check_structural_integrity(path: Path) -> tuple[list[str], list[str], str, d
             warnings.append(f"Hygiene Anti-Pattern: Found non-standard stray folder '{item.name}'. Run --fix to auto-purge.")
 
     # Layer 0 check
+    has_agents = (path / "AGENTS.md").is_file()
     has_agent = (path / "AGENT.md").is_file()
     has_claude = (path / "CLAUDE.md").is_file()
     has_gemini = (path / "GEMINI.md").is_file()
-    if has_agent:
+    if has_agents:
+        stats["l0_files"].append("AGENTS.md")
+    if has_agent and not has_agents:
         stats["l0_files"].append("AGENT.md")
     if has_claude:
         stats["l0_files"].append("CLAUDE.md")
@@ -184,7 +187,7 @@ def check_structural_integrity(path: Path) -> tuple[list[str], list[str], str, d
         stats["l0_files"].append("GEMINI.md")
 
     if not stats["l0_files"]:
-        errors.append("Layer 0 missing: Workspace must contain AGENT.md (or CLAUDE.md / GEMINI.md)")
+        errors.append("Layer 0 missing: Workspace must contain AGENTS.md or AGENT.md (or CLAUDE.md / GEMINI.md)")
 
     # Layer 1 check
     has_l1 = (path / "CONTEXT.md").is_file()
