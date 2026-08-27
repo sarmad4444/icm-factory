@@ -82,7 +82,7 @@ When configured in `AGENTS.md`, AI assistants must dynamically prepend an execut
 | **Grounding / Evidence** | Provenance of statements or code | `Verified (Tests Pass)`, `Grounded (Disk Read)`, `Design (Planning)` |
 | **Calibrated Confidence %** | Self-assessed epistemic certainty | Explicit percentage ($<90\%$ triggers user caution) |
 | **Context Window Budget** | Active context window fill | Estimated `~X.Xk / 200k (X.X%)` |
-| **Turn Token Economy** | Tokens generated during this turn | Estimated `~XXX` output tokens |
+| **Turn Compute Economy** | Compute tokens utilized during this turn (reasoning scratchpad + visible output) | Estimated `[~X.Xk think | ~XXX out]` tokens |
 | **ICM Stage & Task** | Active stage contract and sprint task | e.g. `workflow/stage` and `Phase-NN/TASK-NN-XXX` |
 | **Utilized References** | Specific Layer 3 files consulted | Explicit filenames from `resources/` or `references/` |
 

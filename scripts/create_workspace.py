@@ -38,9 +38,9 @@ def get_telemetry_snippet(style: str) -> str:
         return (
             "Every response MUST dynamically re-evaluate and prepend the following Minimalist Pill Bar header at the very top of EVERY turn before any prose, code, or explanation:\n\n"
             "```markdown\n"
-            "🟢 **`@[Agent]`** ⬡ **Skills:** `[skills or none]` ⬡ **Grounding:** `[Verified (Test) | Grounded (Disk) | Design (Plan)]`  \n"
-            "⚡ **Conf:** `[XX%]` ⬡ **Context:** `[~X.Xk / 200k (X.%)]` ⬡ **Tokens:** `[~XXX]`  \n"
-            "🎯 **Stage:** `[workflow/stage or chamber]` ⬡ **Task:** `[Phase-NN/TASK-NN-XXX or Ad-Hoc]` ⬡ **Refs:** `[consulted files or none]`\n"
+            "🟢 **`@[Agent]`** ⬡ **Skills:** `[skills or none]` ⬡ **Grounding:** `[Verified (Command/Test) | Grounded (Disk Read) | Design (Planning)]`  \n"
+            "⚡ **Conf:** `[XX%]` ⬡ **Context:** `[~X.Xk / 200k (X.%)]` ⬡ **Compute:** `[~X.Xk think | ~XXX out]`  \n"
+            "🎯 **Stage:** `[workflow/stage or chamber]` ⬡ **Task:** `[Phase-NN/TASK-NN-XXX or Ad-Hoc]` ⬡ **Refs:** `[consulted resource files or none]`\n"
             "```"
         )
     elif style == "terminal-box":
@@ -48,7 +48,7 @@ def get_telemetry_snippet(style: str) -> str:
             "Every response MUST dynamically re-evaluate and prepend the following Cyberpunk Terminal Box header at the very top of EVERY turn before any prose, code, or explanation:\n\n"
             "```text\n"
             "┌─ [Agent: @[Agent]] ──── [Skills: [skills]] ─── [Grounding: [Verified|Grounded|Design]] ─┐\n"
-            "│  [Confidence: [XX%]] ── [Context: [~X.Xk/200k]] ── [Tokens: [~XXX]] ─────────────────────│\n"
+            "│  [Confidence: [XX%]] ── [Context: [~X.Xk/200k]] ── [Compute: [~X.Xk think | ~XXX out]] ──│\n"
             "└─ [Workflow: [stage]] ── [Sprint: [Phase/Task]] ── [Refs: [files]] ─────────────────────┘\n"
             "```"
         )
@@ -56,14 +56,14 @@ def get_telemetry_snippet(style: str) -> str:
         return (
             "Every response MUST dynamically re-evaluate and prepend the following Cockpit HUD header at the very top of EVERY turn before any prose, code, or explanation:\n\n"
             "> 🛰️ **`@[Agent]`** · **Skills:** `[skills]` · **Grounding:** `[Verified | Grounded | Design]`  \n"
-            "> 📊 **Confidence:** `[XX%]` · **Context:** `[~X.Xk / 200k]` · **Tokens:** `[~XXX]`  \n"
+            "> 📊 **Confidence:** `[XX%]` · **Context:** `[~X.Xk / 200k]` · **Compute:** `[~X.Xk think | ~XXX out]`  \n"
             "> 🎯 **Workflow:** `[stage]` · **Sprint:** `[Phase/Task]` · **Refs:** `[files]`"
         )
     elif style == "monospace-grid":
         return (
             "Every response MUST dynamically re-evaluate and prepend the following Monospace Grid header at the very top of EVERY turn before any prose, code, or explanation:\n\n"
             "`[Agent: @[Agent]] [Skills: [skills]] [Grounding: [Verified | Grounded | Design]]`  \n"
-            "`[Confidence: [XX%]] [Context: [~X.Xk / 200k]] [Tokens: [~XXX]]`  \n"
+            "`[Confidence: [XX%]] [Context: [~X.Xk / 200k]] [Compute: [~X.Xk think | ~XXX out]]`  \n"
             "`[Workflow: [stage]] [Sprint: [Phase/Task]] [Refs: [files]]`"
         )
     elif style == "micro-table":
@@ -71,7 +71,7 @@ def get_telemetry_snippet(style: str) -> str:
             "Every response MUST dynamically re-evaluate and prepend the following Micro-Table header at the very top of EVERY turn before any prose, code, or explanation:\n\n"
             "| 🤖 Identity & Tools | ⚡ Epistemics & Compute | 🏛️ ICM & Sprint Context |\n"
             "| :--- | :--- | :--- |\n"
-            "| `@[Agent]` (`[skills]`)<br>**Grounding:** `[state]` | **Conf:** `[XX%]` · **Tokens:** `[~XXX]`<br>**Ctx:** `[~X.Xk]` | **Flow:** `[stage]`<br>**Task:** `[task]`<br>**Refs:** `[files]` |"
+            "| `@[Agent]` (`[skills]`)<br>**Grounding:** `[state]` | **Conf:** `[XX%]` · **Compute:** `[~X.Xk think | ~XXX out]`<br>**Ctx:** `[~X.Xk]` | **Flow:** `[stage]`<br>**Task:** `[task]`<br>**Refs:** `[files]` |"
         )
     return "Dynamic response telemetry is disabled for this workspace."
 
