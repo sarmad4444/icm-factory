@@ -1,5 +1,4 @@
-<!-- 💡 HOW THIS WORKS -->
-# Agile Software Engine — Task Routing Guide
+﻿# Agile Software Engine — Task Routing Guide
 
 **Purpose:** Task router for project management, backlog ideation, and feature development stages.
 

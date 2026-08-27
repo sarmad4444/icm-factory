@@ -1,6 +1,3 @@
-<!-- 💡 HOW THIS WORKS -->
-<!-- This file holds compiled, executable 5-part prompt initiatives ready for execution. -->
-
 # Shaped Initiatives & Executable Directives
 
 **Purpose:** Actionable, testable 5-part prompt contracts compiled from backlog ideas.

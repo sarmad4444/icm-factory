@@ -1,5 +1,4 @@
-<!-- 💡 HOW THIS WORKS -->
-# Phase 01: MVP Core — Task Board
+﻿# Phase 01: MVP Core — Task Board
 
 **Phase Directory:** `docs/phases/phase_01_mvp_core/`  
 **Parent Goals:** [`goals.md`](file://./goals.md)

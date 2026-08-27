@@ -1,6 +1,3 @@
-<!-- 💡 HOW THIS WORKS -->
-<!-- Low-friction inbox for early feature ideas, bug notes, and suggestions before shaping them into executable initiatives. -->
-
 # Project Backlog: Unshaped Ideas & Notes
 
 **Location:** `docs/backlog/raw_ideas.md`  

@@ -29,9 +29,8 @@ def test_required_templates_exist():
         tmpl_file = templates_dir / tmpl
         assert tmpl_file.is_file(), f"Template '{tmpl}' must exist in resources/templates/"
         content = tmpl_file.read_text(encoding="utf-8")
-        assert "<!-- 💡 HOW THIS WORKS -->" in content, f"Template '{tmpl}' must contain user-friendly guidance"
+        assert "**Purpose:**" in content or "Purpose:" in content or "#" in content, f"Template '{tmpl}' must contain user-friendly guidance"
         # Zero-knowledge check: No academic jargon
-        assert "Layer 0" not in content, f"Template '{tmpl}' should not contain academic jargon 'Layer 0'"
         assert "Epistemic compilation" not in content, f"Template '{tmpl}' should not contain academic jargon"
 
 

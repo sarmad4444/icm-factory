@@ -1,5 +1,4 @@
-<!-- 💡 HOW THIS WORKS -->
-# Agile Software Engine — Project Operating Guide
+﻿# Agile Software Engine — Project Operating Guide
 
 **Mission:** Build high-reliability software features using objective sprint phases, test-driven development, and 5-part prompt initiatives.  
 **Framework:** Interpretable Context Methodology (ICM)  

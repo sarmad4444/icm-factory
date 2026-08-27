@@ -79,8 +79,7 @@ def init_phase(
             .replace("{GOAL_3}", "Update architectural documentation and references")
         )
     else:
-        goals_content = f"""<!-- 💡 HOW THIS WORKS -->
-# Phase {number:02d}: {phase_title} — Goals & Definition of Done
+        goals_content = f"""# Phase {number:02d}: {phase_title} — Goals & Definition of Done
 
 **Sprint Objective:** {phase_goal}  
 **Status:** In Progress
@@ -114,8 +113,7 @@ def init_phase(
             .replace("{SAMPLE_VERIFY_COMMAND}", "uv run pytest -v")
         )
     else:
-        tasks_content = f"""<!-- 💡 HOW THIS WORKS -->
-# Phase {number:02d}: {phase_title} — Task Board
+        tasks_content = f"""# Phase {number:02d}: {phase_title} — Task Board
 
 **Phase Directory:** `docs/phases/{phase_dirname}/`  
 **Parent Goals:** [`goals.md`](file://./goals.md)

@@ -1,5 +1,4 @@
-<!-- 💡 HOW THIS WORKS -->
-# Systematic Bug Triage — Diagnostic & Fix Engine
+﻿# Systematic Bug Triage — Diagnostic & Fix Engine
 
 **Mission:** Methodically reproduce bugs, diagnose root causes, write regression tests, and implement verified fixes.  
 **Framework:** Interpretable Context Methodology (ICM)  

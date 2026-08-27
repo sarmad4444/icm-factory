@@ -1,5 +1,4 @@
-<!-- 💡 HOW THIS WORKS -->
-# System Architecture RFC — Architecture Design & RFC Engine
+﻿# System Architecture RFC — Architecture Design & RFC Engine
 
 **Mission:** Evaluate technical options, analyze tradeoffs, diagram systems, and generate consensus-ready RFCs.  
 **Framework:** Interpretable Context Methodology (ICM)  

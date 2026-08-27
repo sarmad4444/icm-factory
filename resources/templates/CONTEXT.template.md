@@ -1,6 +1,3 @@
-<!-- 💡 HOW THIS WORKS -->
-<!-- This file is your task router. When you want to work on a task, match your intent against this table to find the right directory and contract. -->
-
 # {WORKSPACE_NAME} — Task Routing Guide
 
 **Purpose:** Master task router mapping user intents to directories, stage contracts, and deliverables.

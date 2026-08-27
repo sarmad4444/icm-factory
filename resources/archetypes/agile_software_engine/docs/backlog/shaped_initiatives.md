@@ -1,5 +1,4 @@
-<!-- 💡 HOW THIS WORKS -->
-# Shaped Initiatives & Executable Directives
+﻿# Shaped Initiatives & Executable Directives
 
 **Location:** `docs/backlog/shaped_initiatives.md`
 

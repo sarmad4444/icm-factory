@@ -1,6 +1,3 @@
-<!-- 💡 HOW THIS WORKS -->
-<!-- This file tracks the live strategy, active sprint phase, and technical conventions for this project. -->
-
 # Project Strategy & Live Status
 
 **Project Name:** {WORKSPACE_NAME}  
@@ -27,7 +24,7 @@
 ## 3. Project Phase Roadmap
 
 | Phase | Name | Goal | Status |
-|---|---|---|---|
+| :--- | :--- | :--- | :--- |
 {PHASE_ROADMAP_ROWS}
 
 ---

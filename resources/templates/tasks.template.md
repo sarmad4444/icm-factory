@@ -1,6 +1,3 @@
-<!-- 💡 HOW THIS WORKS -->
-<!-- This file tracks atomic work items for this phase. Each task has an ID, assignee, checklist, and verification command. -->
-
 # Phase {PHASE_NUMBER}: {PHASE_TITLE} — Task Board
 
 **Phase Directory:** `docs/phases/phase_{PHASE_NUMBER}_{PHASE_SLUG}/`  

@@ -178,6 +178,17 @@ def check_structural_integrity(path: Path) -> tuple[list[str], list[str], str, d
     has_gemini = (path / "GEMINI.md").is_file()
     if has_agents:
         stats["l0_files"].append("AGENTS.md")
+        try:
+            agents_text = (path / "AGENTS.md").read_text(encoding="utf-8")
+            required_sections = ["## 1. Identity", "## 2. Task", "## 3. Context", "## 4. Constraints", "## 5. Output Format"]
+            missing = [s for s in required_sections if s not in agents_text]
+            if missing:
+                warnings.append(
+                    f"Governance Warning in AGENTS.md: Missing 5-part canonical prompt sections {missing}. "
+                    "Run Tier B Semantic Audit to align."
+                )
+        except Exception:
+            pass
     if has_agent:
         stats["l0_files"].append("AGENT.md")
     if has_claude:
@@ -319,6 +330,12 @@ def check_anti_patterns_and_markdown_hygiene(path: Path) -> tuple[list[str], lis
             content = md_file.read_text(encoding="utf-8", errors="replace")
             if len(content.strip()) < 40 and md_file.name != ".gitkeep":
                 warnings.append(f"Trivial Stub: '{md_file.relative_to(path)}' is nearly empty ({len(content.strip())} bytes).")
+            if re.search(r"\[(SKILL|CONTEXT|README)\.md\]\(", content):
+                warnings.append(
+                    f"Generic Link Anchor in '{md_file.relative_to(path)}': "
+                    "Found raw generic filename '[SKILL.md]' / '[CONTEXT.md]' as link text. "
+                    "Run Tier B Semantic Review to replace with human-readable module names."
+                )
         except Exception:
             continue
 

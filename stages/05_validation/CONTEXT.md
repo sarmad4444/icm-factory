@@ -16,9 +16,11 @@
 
 ## Process
 
-1. **Run Compliance Audit:** Execute `uv run python scripts/validate_workspace.py [target_path]`.
-2. **Verify Interfaces:** Confirm sequential handoffs between all stage outputs and downstream inputs.
-3. **Generate Report:** Compile the 4-tier validation audit results.
+1. **Step 1 (Tier A Mechanical Gate):** Run `uv run python scripts/validate_workspace.py [target_path]`.
+2. **Step 2 (Tier B Semantic AI Audit):** Review contracts against `resources/foundations/quality_standards.md` (§8, §9, §10 checklist).
+3. **Step 3 (Intelligent Auto-Correction):** AI directly refactors any non-compliant link anchors or prompt structures.
+4. **Step 4 (Knowledge Graph Sync):** Run `graphify --update` and verify knowledge graph health.
+5. **Step 5 (Generate Report):** Compile final audit summary to `output/audit_report.md`.
 
 ---
 

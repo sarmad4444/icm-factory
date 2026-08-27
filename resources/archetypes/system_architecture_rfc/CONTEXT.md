@@ -1,5 +1,4 @@
-<!-- 💡 HOW THIS WORKS -->
-# System Architecture RFC — Task Routing Guide
+﻿# System Architecture RFC — Task Routing Guide
 
 **Purpose:** Task routing for the System Architecture RFC design workflow.
 

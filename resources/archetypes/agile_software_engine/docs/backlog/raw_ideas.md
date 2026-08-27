@@ -1,5 +1,4 @@
-<!-- 💡 HOW THIS WORKS -->
-# Project Backlog: Unshaped Ideas & Notes
+﻿# Project Backlog: Unshaped Ideas & Notes
 
 **Location:** `docs/backlog/raw_ideas.md`
 

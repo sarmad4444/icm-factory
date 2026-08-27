@@ -1,5 +1,4 @@
-<!-- 💡 HOW THIS WORKS -->
-# Systematic Bug Triage — Task Routing Guide
+﻿# Systematic Bug Triage — Task Routing Guide
 
 **Purpose:** Task router for the bug triage and repair pipeline.
 

@@ -1,6 +1,3 @@
-<!-- 💡 HOW THIS WORKS -->
-<!-- This file sets the specific goals and Definition of Done for this sprint phase. -->
-
 # Phase {PHASE_NUMBER}: {PHASE_TITLE} — Goals & Definition of Done
 
 **Sprint Objective:** {PHASE_OBJECTIVE}  

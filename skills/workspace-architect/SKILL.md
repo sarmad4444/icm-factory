@@ -32,12 +32,13 @@ graph TD
     B -->|"Ready to Scaffold"| D["Mode 2: Blueprint & Approval Gate"]
     B -->|"Evolve Existing Workspace"| E["Mode 3: Workspace Enhancer"]
     B -->|"Evaluate / Install Skill"| F["Mode 5: Skill Intake & Audit Protocol"]
+    B -->|"Audit / Change Management"| G["Mode 7: Tier B Semantic Audit"]
     
     C --> D
-    D --> G["CLI Scaffolding & Skill Installation"]
-    G --> H["4-Tier Compliance Validation"]
-    E --> I["Phase Init / Skill Add / Health Audit"]
-    F --> J["Audit Score [N V F] ➔ Multi-Channel Install ➔ Manifest Sync"]
+    D --> H["CLI Scaffolding & Skill Installation"]
+    H --> I["2-Tier Compliance Validation"]
+    E --> J["Phase Init / Skill Add / Health Audit"]
+    F --> K["Audit Score [N V F] ➔ Multi-Channel Install ➔ Manifest Sync"]
 ```
 
 ---
@@ -60,7 +61,7 @@ When the user enters with a rough, fuzzy, or underspecified idea:
 Once requirements are clear, map the project to one of the 4 Topologies:
 
 | If the project is... | Recommend | Justification |
-|---|---|---|
+| :--- | :--- | :--- |
 | A focused script, 1-off data pipeline, or CLI utility | **Topology 1 (Lean)** | Simple `stages/01_*`, `stages/02_*` directly at root. No overhead. |
 | An agile software service or feature requiring ongoing task tracking | **Topology 2 (Managed)** | Root `docs/` (`STRATEGY.md`, sprint phases, backlog) + `stages/`. |
 | A multi-domain automated pipeline (e.g. video rendering, data ingest) | **Topology 3 (Multi-Workflow)** | `workflows/software_dev/` + `workflows/deploy/` without PM docs. |
@@ -70,13 +71,13 @@ Once requirements are clear, map the project to one of the 4 Topologies:
 Before executing any scaffolding command, render a clean Markdown preview table and ask for confirmation:
 
 ```markdown
-### 📋 Proposed Workspace Architecture: `[workspace_name]`
+### Proposed Workspace Architecture: [workspace_name]
 
 | Dimension | Selected Configuration |
-|---|---|
+| :--- | :--- |
 | **Topology** | Topology 2 (Managed Single-Pipeline) |
 | **Directory** | `./workspaces/[workspace_name]/` |
-| **Pipeline Stages** | `01_spec` → `02_tdd` → `03_implementation` → `04_verification` |
+| **Pipeline Stages** | `01_spec` -> `02_tdd` -> `03_implementation` -> `04_verification` |
 | **Project Brain** | `docs/STRATEGY.md`, `docs/phases/phase_01_mvp_core/` |
 | **Dynamic Skills Catalog** | Enabled (`superpowers`, `graphify`, `adhd`) |
 | **Skill & Plugin Governance** | Enabled (`--with-skill-governance`) |
@@ -155,12 +156,21 @@ When the user asks to evaluate or install an external tool (e.g. *"Should we ins
 ## Mode 6: Universal Response Telemetry Configuration
 
 When scaffolding a new workspace or re-configuring an existing workspace's Layer 0 contract:
-1. Provide the user with the choice of **5 Pluggable Telemetry Styles**:
-   - `pill-bar`: Minimalist Unicode pill bar (Option 5).
-   - `terminal-box`: Cyberpunk ASCII wireframe box (Option 1).
-   - `cockpit-hud`: IDE blockquote alert callout (Option 2).
-   - `monospace-grid`: 3-line clean monospace backtick grid (Option 3).
-   - `micro-table`: 3-column markdown table (Option 4).
-   - `none`: Standard prompt without mandatory response header.
-2. The selected telemetry style is injected into `AGENTS.md` Section 1: *Mandatory Response Telemetry Protocol*.
+1. Provide the user with the choice of 5 Pluggable Telemetry Styles: `pill-bar`, `terminal-box`, `cockpit-hud`, `monospace-grid`, `micro-table`, or `none`.
+2. The selected telemetry style is injected under `AGENTS.md` Section 5: *Output Format & Protocol*.
 3. All AI assistants must dynamically re-evaluate telemetry values turn-by-turn. Copying stale values is strictly forbidden.
+
+---
+
+## Mode 7: Tier B Semantic Quality & Change Management Audit Protocol
+
+Whenever a structural change occurs in ICM-Factory or child workspaces:
+1. **Managed Code Object Principle:** Child `AGENTS.md` files are code artifacts under management conforming to the 5-Part Prompt Schema. The factory agent audits and manipulates them as structured objects without importing their domain persona into the factory session.
+2. **Execute Tier A Mechanical Gate:** Run `uv run python scripts/validate_workspace.py [target]`.
+3. **Execute Tier B Semantic AI Audit Checklist:**
+   - *5-Part Prompt Schema:* Confirm `AGENTS.md` contains `## 1. Identity`, `## 2. Task`, `## 3. Context & Floor Plan`, `## 4. Constraints`, `## 5. Output Format & Protocol`.
+   - *Read-Friendly Link Anchors:* Confirm all markdown links use descriptive module/topic names (never generic `[SKILL.md]`, `[CONTEXT.md]`, or `[README.md]`).
+   - *Document Text Purity:* Confirm document text contains zero HTML comments and zero emojis in text/headings/tables.
+   - *Explicit Guardrails:* Confirm explicit `* **Forbidden:**` negative boundary anchors are present.
+4. **Intelligent Auto-Correction:** Refactor any non-compliant link anchors or prompt structures directly.
+5. **Knowledge Graph Sync:** Execute `graphify --update` and verify knowledge graph health before git commit.

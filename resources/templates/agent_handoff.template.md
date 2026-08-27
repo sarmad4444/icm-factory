@@ -1,6 +1,3 @@
-<!-- 💡 HOW THIS WORKS -->
-<!-- Use this template for plain-text inter-agent requests, schema handshakes, or review requests. -->
-
 # Inter-Agent Handoff: {HANDOFF_TITLE}
 
 **Purpose:** Asynchronous, plain-text work request and context transfer from `@{FROM_AGENT}` to `@{TO_AGENT}`.

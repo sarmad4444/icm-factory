@@ -1,5 +1,4 @@
-<!-- 💡 HOW THIS WORKS -->
-# Project Strategy & Live Status
+﻿# Project Strategy & Live Status
 
 **Project Name:** Agile Software Engine  
 **Active Phase:** `phase_01_mvp_core`  

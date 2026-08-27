@@ -1,5 +1,4 @@
-<!-- 💡 HOW THIS WORKS -->
-# Phase 01: MVP Core — Goals & Definition of Done
+﻿# Phase 01: MVP Core — Goals & Definition of Done
 
 **Sprint Objective:** Deliver the core domain engine with comprehensive unit tests.  
 **Status:** In Progress
